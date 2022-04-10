@@ -21,7 +21,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Link href="/">{t.common.choares}</Link>
         </h1>
         <div>
-          <Link href="/tasks/new-task">{t.tasks.newTask}</Link>
+          <Link href="/tasks/new-task">{t.tasks.createTaskMenu}</Link>
         </div>
       </header>
 

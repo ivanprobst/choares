@@ -5,7 +5,7 @@ import useLocale from "../state/useLocale";
 const Settings: NextPage = () => {
   const { t } = useLocale();
 
-  return <Layout>Page: settings</Layout>;
+  return <Layout>{t.settings.title}</Layout>;
 };
 
 export default Settings;
