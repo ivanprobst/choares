@@ -1,17 +1,20 @@
 import type { NextPage } from "next";
 import Layout from "../components/layout";
+import useLocale from "../state/useLocale";
 
 const About: NextPage = () => {
+  const { t } = useLocale();
+
   return (
     <Layout>
-      <div>© 2022, created by IvanProbst</div>
+      <div>{t.about.copyright}</div>
       <div>
         <a
           href="https://ivanprobst.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          ivanprobst.com
+          {t.about.website}
         </a>
         &nbsp;|&nbsp;
         <a
@@ -19,7 +22,7 @@ const About: NextPage = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          GitHub
+          {t.about.github}
         </a>
       </div>
     </Layout>

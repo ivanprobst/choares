@@ -1,22 +1,27 @@
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
+import useLocale from "../state/useLocale";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useLocale();
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Choares — Your home chores, shared</title>
-        <meta name="description" content="Your home chores, shared" />
+        <title>
+          {t.common.choares} — {t.common.description}
+        </title>
+        <meta name="description" content={t.common.description} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <Link href="/">Choares</Link>
+          <Link href="/">{t.common.choares}</Link>
         </h1>
         <div>
-          <Link href="/tasks/new-task">New task</Link>
+          <Link href="/tasks/new-task">{t.tasks.newTask}</Link>
         </div>
       </header>
 
@@ -24,8 +29,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <footer className={styles.footer}>
         <nav className={styles.nav}>
-          <Link href="/about">About</Link>
-          <Link href="/settings">Settings</Link>
+          <Link href="/about">{t.about.title}</Link>
+          <Link href="/settings">{t.settings.title}</Link>
         </nav>
       </footer>
     </div>
