@@ -5,22 +5,22 @@ import { useRouter } from "next/router";
 import Layout from "../../components/layout";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import { APIResponse } from "../../utils/types";
+import { APIResponseType, TaskDBType } from "../../utils/types";
 import { API_ROUTE_TASKS } from "../../utils/constants";
 
 const NewTask: NextPage = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const [taskName, setTaskName] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskDueDate, setTaskDueDate] = useState(""); // TODO: move to date format (datefns, etc.)
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState(""); // TODO: default to the next day, move to datefns
 
   const createTaskHandler = async () => {
     const taskData = {
-      taskName,
-      taskDescription,
-      taskDueDate,
+      name: name || null,
+      description: description || null,
+      dueDate: new Date(dueDate) || null,
     };
 
     const response = await fetch(API_ROUTE_TASKS, {
@@ -31,11 +31,12 @@ const NewTask: NextPage = () => {
       },
       body: JSON.stringify(taskData),
     });
-    const responseJSON: APIResponse = await response.json();
+    const responseJSON: APIResponseType = await response.json();
 
     // TODO: display confirmation / error notification
     if (responseJSON.success) {
-      console.log("data: ", responseJSON.data);
+      const taskData = responseJSON.data as TaskDBType;
+      console.log("taskData: ", taskData);
       router.push("/");
     } else {
       console.log("error_type: ", responseJSON.error_type);
@@ -51,12 +52,12 @@ const NewTask: NextPage = () => {
 
         <div className={styles.formBlock}>
           <label className={styles.label} htmlFor="task-name">
-            {t.tasks.taskLabelName}
+            {t.tasks.taskLabelName} *
           </label>
           <textarea
             id="task-name"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className={styles.input}
             rows={2}
             placeholder={t.tasks.taskLabelName}
@@ -70,8 +71,8 @@ const NewTask: NextPage = () => {
           </label>
           <textarea
             id="task-description"
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             className={styles.input}
             rows={4}
             placeholder={t.tasks.taskLabelDetails}
@@ -84,11 +85,11 @@ const NewTask: NextPage = () => {
           </label>
           <input
             id="task-date"
-            value={taskDueDate}
-            onChange={(e) => setTaskDueDate(e.target.value)}
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
             type="date"
             className={styles.input}
-            placeholder={t.tasks.taskLabelDueDate} // TODO: default to the next day
+            placeholder={t.tasks.taskLabelDueDate}
           />
         </div>
 
