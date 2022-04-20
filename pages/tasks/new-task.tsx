@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 import Layout from "../../components/layout";
 import styles from "../../styles/Home.module.css";
@@ -15,6 +16,8 @@ const NewTask: NextPage = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(""); // TODO: default to the next day, move to datefns
+
+  const submitDisabled = name === "";
 
   const createTaskHandler = async () => {
     const taskData = {
@@ -33,12 +36,12 @@ const NewTask: NextPage = () => {
     });
     const responseJSON: APIResponseType = await response.json();
 
-    // TODO: display confirmation / error notification
     if (responseJSON.success) {
       const taskData = responseJSON.data as TaskDBType;
-      console.log("taskData: ", taskData);
+      toast.success(`Success: task created: ${JSON.stringify(taskData)}`); // TODO: cleanup toast
       router.push("/");
     } else {
+      toast.error(`Error: ${responseJSON.error_type}`);
       console.log("error_type: ", responseJSON.error_type);
     }
 
@@ -93,7 +96,11 @@ const NewTask: NextPage = () => {
           />
         </div>
 
-        <button className={styles.button} onClick={createTaskHandler}>
+        <button
+          className={styles.button}
+          onClick={createTaskHandler}
+          disabled={submitDisabled}
+        >
           {t.tasks.createTaskButton}
         </button>
       </section>

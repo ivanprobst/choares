@@ -66,7 +66,7 @@
 .button{
   width: 100%;
   padding: 1rem;
-  background: var(--color-pink-medium);
+  background: var(--color-pink-dark);
   border: 1px solid black;
   border-radius: 5px;
   font-size: var(--font-size-normal);
@@ -75,4 +75,8 @@
 }
   .button:active {
     background: var(--color-pink-dark);
+  }
+  .button:disabled {
+    background: var(--color-pink-medium);
+    cursor: not-allowed;
   }
