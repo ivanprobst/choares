@@ -1,20 +1,90 @@
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import Link from "next/link";
-import Layout from "../components/layout";
+
+import Layout from "../components/Layout";
+import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
+import { APIResponseType, TaskDBType } from "../utils/types";
+import Spinner from "../components/Spinner";
+import { API_ROUTE_TASKS } from "../utils/constants";
+import toast from "react-hot-toast";
+import Button from "../components/Button";
+import { format } from "date-fns";
+
+const TaskItem = ({ task }: { task: TaskDBType }) => {
+  const { t } = useLocale();
+
+  const taskCompletionHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    toast.success(`Task completed: ${task.name}`);
+    console.log("TODO: complete the task");
+  };
+
+  return (
+    <li className={styles.tasksListItem} key={task.id}>
+      <div>
+        <h3 className={styles.tasksListName}>{task.name}</h3>
+        <p className={styles.tasksListDueDate}>
+          {`${t.tasks.dueBy}: ${task.dueDate ?? "-"}`}
+        </p>
+      </div>
+      <div className={styles.tasksListConfirmation}>
+        <Button type="blue" onClick={taskCompletionHandler}>
+          {t.tasks.taskCompleted}
+        </Button>
+      </div>
+    </li>
+  );
+};
+
+const TaskList = ({ tasks }: { tasks?: Array<TaskDBType> }) => {
+  const { t } = useLocale();
+
+  return tasks ? (
+    <ul className={styles.tasksList}>
+      {tasks.map((task) => (
+        <TaskItem key={task.id} task={task}></TaskItem>
+      ))}
+    </ul>
+  ) : (
+    <>{t.tasks.noTasksFound}</>
+  );
+};
 
 const Home: NextPage = () => {
   const { t } = useLocale();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tasks, setTasks] = useState<Array<TaskDBType> | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setIsLoading(true);
+
+      const response = await fetch(API_ROUTE_TASKS, {
+        method: "GET",
+      });
+      const responseJSON: APIResponseType = await response.json();
+
+      if (responseJSON.success) {
+        setTasks(responseJSON.data);
+      } else {
+        setTasks(undefined);
+        toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
+        console.log("error_type: ", responseJSON.error_type);
+      }
+
+      setIsLoading(false);
+      return;
+    };
+
+    fetchTasks();
+    return;
+  }, [t]);
 
   return (
     <>
       <Layout>
-        <h2>{t.tasks.tasksList}</h2>
-        <ul>
-          <li>
-            <Link href="/tasks/task">{t.tasks.task}</Link>
-          </li>
-        </ul>
+        <h2 className={styles.pageTitle}>{t.tasks.tasksList}</h2>
+        {isLoading ? <Spinner /> : <TaskList tasks={tasks} />}
       </Layout>
     </>
   );

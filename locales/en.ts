@@ -12,6 +12,11 @@ export const en = {
     taskLabelDetails: "Details",
     taskLabelDueDate: "Due date",
     createTaskButton: "Create task",
+    noTasksFound: "No tasks found",
+    errorCreateTask: "Error: failed to create task",
+    errorLoadTasks: "Error: failed to load tasks",
+    dueBy: "Due by",
+    taskCompleted: "Completed",
   },
   settings: {
     title: "Settings",

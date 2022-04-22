@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: max(100vh, 700px); /* TODO: ensure the min height is OK */
+  min-height: 100vh; /* TODO: ensure the min height is OK */
   width: min(100%, 800px);
   margin: auto;
   background: var(--color-gray-dark);
@@ -115,6 +115,7 @@
 .tasksListItem {
   display: grid;
   grid-template-columns: 4fr 1fr;
+  margin-bottom: 1rem;
   width: 100%;
   padding: 1rem; 
   background: var(--color-gray)
