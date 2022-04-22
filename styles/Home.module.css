@@ -26,10 +26,15 @@
   text-decoration: none;
 }
 
+.pageTitle {
+  margin-bottom: 1rem;
+  font-size: var(--font-size-big);
+}
+
 .main {
   width: 100%;
   flex-grow: 1;
-  padding: 0.5rem 2rem;
+  padding: 1rem 2rem;
 }
 
 .footer {
@@ -66,17 +71,93 @@
 .button{
   width: 100%;
   padding: 1rem;
-  background: var(--color-pink-dark);
-  border: 1px solid black;
-  border-radius: 5px;
+  color: var(--color-gray-dark);
   font-size: var(--font-size-normal);
   font-weight: bold;
   cursor: pointer;
 }
-  .button:active {
-    background: var(--color-pink-dark);
-  }
   .button:disabled {
-    background: var(--color-pink-medium);
+    color: var(--color-gray-light);
     cursor: not-allowed;
   }
+.buttonGreen {
+  background: var(--color-green);
+  border: 1px solid var(--color-green-dark);
+}
+  .buttonGreen:active {
+    background: var(--color-green-dark);
+  }
+  .buttonGreen:disabled {
+    background: var(--color-green-light);
+  }
+.buttonBlue {
+  background: var(--color-blue);
+  border: 1px solid var(--color-blue-dark);
+}
+  .buttonBlue:active {
+    background: var(--color-blue-dark);
+  }
+  .buttonBlue:disabled {
+    background: var(--color-blue-light);
+  }
+.buttonRed {
+  background: var(--color-red);
+  border: 1px solid var(--color-red-dark);
+}
+  .buttonRed:active {
+    background: var(--color-red-dark);
+  }
+  .buttonRed:disabled {
+    background: var(--color-red-light);
+  }
+
+.tasksList {}
+.tasksListItem {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  width: 100%;
+  padding: 1rem; 
+  background: var(--color-gray)
+}
+.tasksListName {
+  margin-bottom: 1rem;
+}
+.tasksListDueDate {
+  font-style: italic;
+  font-size: var(--font-size-small);
+}
+.tasksListConfirmation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  animation: rotate 2s linear infinite;
+  width: 30px;
+  height: 30px;
+}
+.spinnerPath {
+  stroke: white;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
