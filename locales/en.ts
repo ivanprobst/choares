@@ -6,7 +6,12 @@ export const en = {
   tasks: {
     task: "Task",
     tasksList: "Tasks list",
-    newTask: "New task",
+    createTaskMenu: "Create task",
+    createTaskTitle: "Create a new task",
+    taskLabelName: "Name",
+    taskLabelDetails: "Details",
+    taskLabelDueDate: "Due date",
+    createTaskButton: "Create task",
   },
   settings: {
     title: "Settings",

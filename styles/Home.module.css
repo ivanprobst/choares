@@ -14,7 +14,7 @@
   align-items: center;
   width: 100%;
   padding: 0.5rem 1rem;
-  border-bottom: 2px solid var(--color-white-light);
+  border-bottom: 2px solid var(--color-pink-light);
 }
 .title {
   flex: 1;
@@ -27,14 +27,15 @@
 }
 
 .main {
+  width: 100%;
   flex-grow: 1;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2rem;
 }
 
 .footer {
   width: 100%;
   padding: 0.5rem 1rem;
-  border-top: 2px solid var(--color-white-light);
+  border-top: 2px solid var(--color-pink-light);
 }
 .nav {
   display: flex;
@@ -42,3 +43,40 @@
   align-content: center;
   gap: 0.5rem;
 }
+
+.formBlock {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.input{
+  width: 100%;
+  padding: 1rem;
+  background: var(--color-pink-light);
+  border: 1px solid black;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: var(--font-size-normal);
+}
+
+.button{
+  width: 100%;
+  padding: 1rem;
+  background: var(--color-pink-dark);
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: var(--font-size-normal);
+  font-weight: bold;
+  cursor: pointer;
+}
+  .button:active {
+    background: var(--color-pink-dark);
+  }
+  .button:disabled {
+    background: var(--color-pink-medium);
+    cursor: not-allowed;
+  }

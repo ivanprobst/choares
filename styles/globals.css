@@ -1,10 +1,11 @@
 :root {
-  --color-white-light: #FFEFE5;
+  --color-pink-light: #FFEFE5;
+  --color-pink-medium: #FFE4B5;
+  --color-pink-dark: #E9967A;
   --color-gray-dark: #212124;
-  --color-primary: #E6625E;
 
   --font-size-small: 0.6rem;
-  --font-size-normal: 0.8rem;
+  --font-size-normal: 1rem;
   --font-size-big: 1.2rem;
   --font-size-biggest: 1.4rem;
 }
@@ -13,14 +14,18 @@ html,
 body {
   padding: 0;
   margin: 0;
-  color: var(--color-white-light);
+  color: var(--color-pink-light);
   font-family: Helvetica Neue, Helvetica, sans-serif;
+}
+
+h2 {
+  font-size: var(--font-size-big);
 }
 
 a {
   color: inherit;
   text-decoration: underline;
-  color: var(--color-white-light);
+  color: var(--color-pink-light);
 }
 
 * {

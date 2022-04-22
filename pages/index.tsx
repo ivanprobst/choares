@@ -7,14 +7,16 @@ const Home: NextPage = () => {
   const { t } = useLocale();
 
   return (
-    <Layout>
-      <h2>{t.tasks.tasksList}</h2>
-      <ul>
-        <li>
-          <Link href="/tasks/task">{t.tasks.task}</Link>
-        </li>
-      </ul>
-    </Layout>
+    <>
+      <Layout>
+        <h2>{t.tasks.tasksList}</h2>
+        <ul>
+          <li>
+            <Link href="/tasks/task">{t.tasks.task}</Link>
+          </li>
+        </ul>
+      </Layout>
+    </>
   );
 };
 

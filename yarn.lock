@@ -843,6 +843,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/client@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "@prisma/client@npm:3.12.0"
+  dependencies:
+    "@prisma/engines-version": 3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980
+  peerDependencies:
+    prisma: "*"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+  checksum: b342c6e771e671a49684f69a2cb27df1d5083fb97a55aa0d07db3e6ad5bf16e27ee566e528b97b1c501be2c46b98eb7577996e1be6e029910537538107eba471
+  languageName: node
+  linkType: hard
+
+"@prisma/engines-version@npm:3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980":
+  version: 3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980
+  resolution: "@prisma/engines-version@npm:3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
+  checksum: e69f48def4b5761d594ebe7c87f04772fd03f2fb3cc2eacee92188b244d6c2d9aeff75be88d10bfd2a3c05b1da8d04d2a4d4a977b7a23671cc0617fb811b2855
+  languageName: node
+  linkType: hard
+
+"@prisma/engines@npm:3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980":
+  version: 3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980
+  resolution: "@prisma/engines@npm:3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980"
+  checksum: 7f4dafe75ab5c47847ef3be72812ddc553944baf821600349bd023d11187245bc5c56a1df0b0a34b91ec5072627418690c20bf934c1e4242b388e6225bfa3604
+  languageName: node
+  linkType: hard
+
 "@rushstack/eslint-patch@npm:1.0.8":
   version: 1.0.8
   resolution: "@rushstack/eslint-patch@npm:1.0.8"
@@ -1608,6 +1636,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "choares@workspace:."
   dependencies:
+    "@prisma/client": ^3.12.0
     "@types/jest": ^27.4.1
     "@types/node": 17.0.23
     "@types/react": 18.0.0
@@ -1619,8 +1648,10 @@ __metadata:
     jest: ^27.5.1
     next: 12.1.4
     prettier: 2.6.2
+    prisma: ^3.12.0
     react: 18.0.0
     react-dom: 18.0.0
+    react-hot-toast: ^2.2.0
     typescript: 4.6.3
   languageName: unknown
   linkType: soft
@@ -2733,6 +2764,15 @@ __metadata:
     merge2: ^1.4.1
     slash: ^3.0.0
   checksum: b4be8885e0cfa018fc783792942d53926c35c50b3aefd3fdcfb9d22c627639dc26bd2327a40a0b74b074100ce95bb7187bfeae2f236856aa3de183af7a02aea6
+  languageName: node
+  linkType: hard
+
+"goober@npm:^2.1.1":
+  version: 2.1.8
+  resolution: "goober@npm:2.1.8"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: c877e854814e29c085c0d3f7879492788ceff9b1a0a0d731bfe22e59a2d206f991c3fb44ad14a32a9c2f396e3280ad6a8e597a95bb2d052c59dd7c25814f1c67
   languageName: node
   linkType: hard
 
@@ -4632,6 +4672,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prisma@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "prisma@npm:3.12.0"
+  dependencies:
+    "@prisma/engines": 3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980
+  bin:
+    prisma: build/index.js
+    prisma2: build/index.js
+  checksum: ac4aefdaa7af285686fcdfb9060f65a650ef4576000718c7c53372326f631ca5a5649ed10398db89952c63b2c6fbcd227e38de59a6e69f9dcb746fac680da650
+  languageName: node
+  linkType: hard
+
 "promise-inflight@npm:^1.0.1":
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
@@ -4700,6 +4752,18 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
   checksum: dd0ba9f2f31dd728076c892a95b2f5a8dfe79136431b0289afb46eec39d0ca6b6f0f40a60fd8aa6ef702c98ce7c26100d3d4dbc35c7c9e87429cd04f84cb58bd
+  languageName: node
+  linkType: hard
+
+"react-hot-toast@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "react-hot-toast@npm:2.2.0"
+  dependencies:
+    goober: ^2.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: bb34ddc8ada14cbd75a37f14d2563412174e23276eb05e9fb23a031b6d8374ca190cefa1940692f4371529ddafeb2d4b8d3e5023187c2851ec8cb247461553ee
   languageName: node
   linkType: hard
 
