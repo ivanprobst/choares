@@ -24,7 +24,9 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
       <div>
         <h3 className={styles.tasksListName}>{task.name}</h3>
         <p className={styles.tasksListDueDate}>
-          {`${t.tasks.dueBy}: ${task.dueDate ?? "-"}`}
+          {`${t.tasks.dueBy}: ${
+            task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
+          }`}
         </p>
       </div>
       <div className={styles.tasksListConfirmation}>

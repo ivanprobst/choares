@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { format, addDays } from "date-fns";
 
 import Layout from "../../components/Layout";
 import styles from "../../styles/Home.module.css";
@@ -16,7 +17,9 @@ const NewTask: NextPage = () => {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState(""); // TODO: default to the next day, move to datefns
+  const [dueDate, setDueDate] = useState(
+    format(addDays(new Date(), 1), "yyyy-MM-dd")
+  );
 
   const submitDisabled = name === "";
 
