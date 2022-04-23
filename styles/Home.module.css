@@ -133,6 +133,23 @@
   justify-content: center;
 }
 
+.tabsContainer {
+  display: flex;
+  margin-bottom: 1rem;
+}
+.tab {
+  padding: 0 0.5rem;
+  border: none;
+  background: none;
+  font-size: var(--font-size-normal);
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tab:not(:last-child) {
+  border-right: 1px solid white;
+}
+
 .spinner {
   animation: rotate 2s linear infinite;
   width: 30px;
