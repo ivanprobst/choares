@@ -1,28 +1,40 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, isToday } from "date-fns";
 
-import Layout from "../../components/Layout";
-import styles from "../../styles/Home.module.css";
-import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../utils/types";
-import Spinner from "../../components/Spinner";
-import { API_ROUTE_TASKS } from "../../utils/constants";
-import Button from "../../components/Button";
-import useTabs from "../../hooks/useTabs";
-import { TabsContainer } from "../../components/Tab";
+import Layout from "../components/Layout";
+import styles from "../styles/Home.module.css";
+import useLocale from "../state/useLocale";
+import { APIResponseType, TaskDBType } from "../utils/types";
+import Spinner from "../components/Spinner";
+import { API_ROUTE_TASKS } from "../utils/constants";
+import Button from "../components/Button";
+import useTabs from "../hooks/useTabs";
+import { TabsContainer } from "../components/Tab";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
+  const router = useRouter();
+
+  const openTaskHandler = () => {
+    console.log("open task");
+    router.push(`/task/${task.id}`);
+  };
 
   const taskCompletionHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     toast.success(`Task completed: ${task.name}`);
     console.log("TODO: complete the task");
   };
 
   return (
-    <li className={styles.tasksListItem} key={task.id}>
+    <li
+      className={styles.tasksListItem}
+      key={task.id}
+      onClick={openTaskHandler}
+    >
       <div>
         <h3 className={styles.tasksListName}>{task.name}</h3>
         <p className={styles.tasksListDueDate}>

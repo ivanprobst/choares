@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import handler from "./tasks";
+import handler from ".";
 
 const mockRequest = (method: string, body?: any) => {
   return {

@@ -1,8 +1,7 @@
-import { parseISO } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import prisma from "../../utils/prisma";
-import { isTaskDataType } from "../../utils/types";
+import prisma from "../../../utils/prisma";
+import { isTaskDataType } from "../../../utils/types";
 
 export default async function handler(
   req: NextApiRequest,
