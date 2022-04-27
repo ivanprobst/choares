@@ -138,6 +138,13 @@
   justify-content: center;
 }
 
+.taskDetails {
+  margin-bottom: 1rem;
+}
+.taskActions {
+  padding: 0 2rem;
+}
+
 .tabsContainer {
   display: flex;
   margin-bottom: 1rem;

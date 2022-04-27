@@ -15,9 +15,12 @@ export const en = {
     noTasksFound: "No tasks found",
     errorCreateTask: "Error: failed to create task",
     errorLoadTasks: "Error: failed to load tasks",
+    errorDeleteTask: "Error: failed to delete task",
     dueBy: "Due by",
     taskCompleted: "Completed",
     backTasksList: "Go back to tasks list",
+    deleteTask: "Delete this task",
+    successDeleteTask: "The task has been successfully deleted.",
   },
   settings: {
     title: "Settings",

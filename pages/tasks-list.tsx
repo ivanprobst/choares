@@ -13,6 +13,7 @@ import { API_ROUTE_TASKS } from "../utils/constants";
 import Button from "../components/Button";
 import useTabs from "../hooks/useTabs";
 import { TabsContainer } from "../components/Tab";
+import BannerPageError from "../components/BannerPageError";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
@@ -62,7 +63,7 @@ const TaskList = ({ tasks }: { tasks?: Array<TaskDBType> }) => {
       ))}
     </ul>
   ) : (
-    <>{t.tasks.noTasksFound}</>
+    <BannerPageError />
   );
 };
 
