@@ -144,6 +144,9 @@
 .taskActions {
   padding: 0 2rem;
 }
+  .taskActions button {
+    margin-bottom: 1rem;
+  }
 
 .tabsContainer {
   display: flex;

@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from "../../../utils/prisma";
+import { isTaskUpdateType } from "../../../utils/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,6 +9,8 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     await handleGet(req, res);
+  } else if (req.method === "PUT") {
+    await handlePut(req, res);
   } else if (req.method === "DELETE") {
     await handleDelete(req, res);
   } else {
@@ -39,6 +42,48 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
     return res
       .status(500)
       .json({ success: false, error_type: "database_read_error" });
+  }
+
+  return res.status(200).json({ success: true, data: task });
+};
+
+const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
+  console.info("body: ", req.body);
+  const { taskId } = req.query;
+  const taskData = req.body;
+
+  if (!taskId || Array.isArray(taskId)) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: "taskId_not_found" });
+  }
+
+  if (!taskData) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: "data_not_found" });
+  }
+
+  if (!isTaskUpdateType(taskData)) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: "data_format_incorrect" });
+  }
+
+  let task = undefined;
+  try {
+    task = await prisma.task.update({
+      where: { id: taskId },
+      data: taskData,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!task) {
+    return res
+      .status(500)
+      .json({ success: false, error_type: "database_write_error" });
   }
 
   return res.status(200).json({ success: true, data: task });

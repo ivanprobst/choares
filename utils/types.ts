@@ -23,3 +23,6 @@ export type TaskDBType = DBBaseType & TaskDataType;
 export const isTaskDataType = (data: any): data is TaskDataType => {
   return !!data.name;
 };
+export const isTaskUpdateType = (data: any) => {
+  return !!data.name || !!data.description || !!data.dueDate;
+};

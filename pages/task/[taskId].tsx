@@ -10,7 +10,7 @@ import { APIResponseType, TaskDBType } from "../../utils/types";
 import { API_ROUTE_TASKS } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 
@@ -19,6 +19,37 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentTask, setCurrentTask] = useState<TaskDBType>(task);
+
+  const rescheduleTaskHandler = async () => {
+    setIsLoading(true);
+
+    const updatedDueDate = {
+      dueDate: addDays(new Date(), 1),
+    };
+
+    const response = await fetch(`${API_ROUTE_TASKS}/${task.id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedDueDate),
+    });
+    const responseJSON: APIResponseType = await response.json();
+
+    if (responseJSON.success) {
+      toast.success(t.tasks.successRescheduleTask);
+      setCurrentTask(responseJSON.data);
+    } else {
+      toast.error(
+        `${t.tasks.errorRescheduleTask} (${responseJSON.error_type})`
+      );
+      console.log("error_type: ", responseJSON.error_type);
+    }
+
+    setIsLoading(false);
+  };
 
   const deleteTaskHandler = async () => {
     setIsLoading(true);
@@ -42,16 +73,26 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   return (
     <>
       <section className={styles.taskDetails}>
-        <h2>{task.name}</h2>
-        {task.description && <p>{task.description}</p>}
+        <h2>{currentTask.name}</h2>
+        {currentTask.description && <p>{currentTask.description}</p>}
         <p>
           {`${t.tasks.dueBy}: ${
-            task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
+            currentTask.dueDate
+              ? format(new Date(currentTask.dueDate), "MMM d, y")
+              : "-"
           }`}
         </p>
       </section>
 
       <section className={styles.taskActions}>
+        <Button
+          onClick={rescheduleTaskHandler}
+          type="blue"
+          isLoading={isLoading}
+        >
+          {t.tasks.rescheduleTomorrow}
+        </Button>
+
         <Button onClick={deleteTaskHandler} type="red" isLoading={isLoading}>
           {t.tasks.deleteTask}
         </Button>
@@ -90,7 +131,9 @@ const Task: NextPage = () => {
       return;
     };
 
-    fetchTask();
+    if (taskId) {
+      fetchTask();
+    }
     return;
   }, [t, taskId]);
 
