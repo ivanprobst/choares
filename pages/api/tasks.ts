@@ -1,3 +1,4 @@
+import { parseISO } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from "../../utils/prisma";
@@ -7,7 +8,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
+    await handleGet(req, res);
+  } else if (req.method === "POST") {
     await handlePost(req, res);
   } else {
     res
@@ -50,4 +53,21 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   return res.status(200).json({ success: true, data: task });
+};
+
+const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
+  let tasks = undefined;
+  try {
+    tasks = await prisma.task.findMany();
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!tasks) {
+    return res
+      .status(500)
+      .json({ success: false, error_type: "database_read_error" });
+  }
+
+  return res.status(200).json({ success: true, data: tasks });
 };

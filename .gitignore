@@ -6,7 +6,7 @@
 .pnp.js
 
 # yarn
-.yarn/*
+.yarn
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins

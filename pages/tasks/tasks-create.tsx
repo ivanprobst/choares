@@ -2,12 +2,14 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { format, addDays } from "date-fns";
 
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, TaskDBType } from "../../utils/types";
 import { API_ROUTE_TASKS } from "../../utils/constants";
+import Button from "../../components/Button";
 
 const NewTask: NextPage = () => {
   const { t } = useLocale();
@@ -15,7 +17,9 @@ const NewTask: NextPage = () => {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState(""); // TODO: default to the next day, move to datefns
+  const [dueDate, setDueDate] = useState(
+    format(addDays(new Date(), 1), "yyyy-MM-dd")
+  );
 
   const submitDisabled = name === "";
 
@@ -41,7 +45,7 @@ const NewTask: NextPage = () => {
       toast.success(`Success: task created: ${JSON.stringify(taskData)}`); // TODO: cleanup toast
       router.push("/");
     } else {
-      toast.error(`Error: ${responseJSON.error_type}`);
+      toast.error(`${t.tasks.errorCreateTask} (${responseJSON.error_type})`);
       console.log("error_type: ", responseJSON.error_type);
     }
 
@@ -96,13 +100,9 @@ const NewTask: NextPage = () => {
           />
         </div>
 
-        <button
-          className={styles.button}
-          onClick={createTaskHandler}
-          disabled={submitDisabled}
-        >
+        <Button onClick={createTaskHandler} disabled={submitDisabled}>
           {t.tasks.createTaskButton}
-        </button>
+        </Button>
       </section>
     </Layout>
   );

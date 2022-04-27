@@ -23,6 +23,16 @@ describe("the API /tasks...", () => {
     res = mockResponse();
   });
 
+  describe("handles GET requests, and...", () => {
+    it("should return whatever is in the DB", async () => {
+      const req = mockRequest("GET", undefined);
+
+      await handler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+  });
+
   describe("handles POST requests, and...", () => {
     it("should return 400 when missing data sent from client", async () => {
       const req = mockRequest("POST", undefined);
