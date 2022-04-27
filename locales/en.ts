@@ -17,6 +17,7 @@ export const en = {
     errorLoadTasks: "Error: failed to load tasks",
     dueBy: "Due by",
     taskCompleted: "Completed",
+    backTasksList: "Go back to tasks list",
   },
   settings: {
     title: "Settings",

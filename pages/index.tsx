@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import TasksListPage from "./tasks/tasks-list";
+import TasksListPage from "./tasks-list";
 
 const Home: NextPage = () => {
   return (

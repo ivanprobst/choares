@@ -117,9 +117,14 @@
   grid-template-columns: 4fr 1fr;
   margin-bottom: 1rem;
   width: 100%;
-  padding: 1rem; 
-  background: var(--color-gray)
+  padding: 1rem;
+  border: 1px solid var(--color-gray);
+  background: var(--color-gray);
+  cursor: pointer;
 }
+  .tasksListItem:hover{
+    border: 1px solid var(--color-pink-light);
+  }
 .tasksListName {
   margin-bottom: 1rem;
 }
