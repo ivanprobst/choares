@@ -42,7 +42,7 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       data: taskData,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {

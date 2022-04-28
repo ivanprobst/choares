@@ -30,7 +30,7 @@ export const isTaskUpdateType = (data: any) => {
     !!data.name ||
     !!data.description ||
     !!data.dueDate ||
-    !!data.completed !== undefined ||
+    data.completed !== undefined ||
     !!data.completedAt
   );
 };
