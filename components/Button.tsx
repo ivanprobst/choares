@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../styles/Home.module.css";
 import Spinner from "./Spinner";
 
@@ -9,7 +10,7 @@ const Button = ({
   disabled = false,
 }: {
   children: React.ReactNode;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: () => void;
   type?: "green" | "red" | "blue";
   isLoading?: boolean;
   disabled?: boolean;
