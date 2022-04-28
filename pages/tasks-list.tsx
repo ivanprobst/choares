@@ -71,11 +71,17 @@ const TasksListPage: NextPage = () => {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tasks, setTasks] = useState<Array<TaskDBType> | undefined>(undefined);
-  const { currentTab, tabs } = useTabs(["Today's task", "All tasks"]);
 
   const todayTasks = tasks?.filter(
     (task) => task.dueDate && isToday(new Date(task.dueDate))
   );
+  const completedTasks = tasks?.filter((task) => task.completed);
+  const Tabs = [
+    { title: "Today's task", content: <TaskList tasks={todayTasks} /> },
+    { title: "All tasks", content: <TaskList tasks={tasks} /> },
+    { title: "Completed tasks", content: <TaskList tasks={completedTasks} /> },
+  ];
+  const { CurrentTab, tabs } = useTabs(Tabs);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -106,13 +112,7 @@ const TasksListPage: NextPage = () => {
     <>
       <Layout>
         <TabsContainer>{tabs.map((tab) => tab)}</TabsContainer>
-        {isLoading ? (
-          <Spinner />
-        ) : currentTab === 0 ? (
-          <TaskList tasks={todayTasks} />
-        ) : (
-          <TaskList tasks={tasks} />
-        )}
+        {isLoading ? <Spinner /> : <CurrentTab />}
       </Layout>
     </>
   );

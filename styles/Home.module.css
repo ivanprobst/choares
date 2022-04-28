@@ -158,12 +158,14 @@
   background: none;
   font-size: var(--font-size-normal);
   color: white;
-  text-decoration: underline;
   cursor: pointer;
 }
-.tab:not(:last-child) {
-  border-right: 1px solid white;
-}
+  .tab:not(:last-child) {
+    border-right: 1px solid white;
+  }
+  .tabCurrent {
+    text-decoration: underline;
+  }
 
 .spinner {
   animation: rotate 2s linear infinite;

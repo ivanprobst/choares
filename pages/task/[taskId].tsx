@@ -144,7 +144,9 @@ const Task: NextPage = () => {
   return (
     <Layout>
       <TabsContainer>
-        <Tab onClick={moveToListHandler}>{t.tasks.backTasksList}</Tab>
+        <Tab onClick={moveToListHandler} current={true}>
+          {t.tasks.backTasksList}
+        </Tab>
       </TabsContainer>
       {isLoading ? (
         <Spinner />
