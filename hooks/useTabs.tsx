@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { Tab } from "../components/Tab";
 
-const useTabs = (tabNames: Array<string>) => {
-  const [currentTab, setCurrentTab] = useState<number>(0);
+const useTabs = (tabRefs: Array<{ title: string; content: JSX.Element }>) => {
+  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
-  const tabs = tabNames.map((tabName, index) => (
-    <Tab key={tabName} onClick={() => setCurrentTab(index)}>
-      {tabName}
+  const tabs = tabRefs.map((tabRef, index) => (
+    <Tab
+      key={tabRef.title}
+      onClick={() => setCurrentTabIndex(index)}
+      current={index === currentTabIndex}
+    >
+      {tabRef.title}
     </Tab>
   ));
 
-  return { currentTab, tabs };
+  const CurrentTab = () => tabRefs[currentTabIndex].content;
+
+  return { CurrentTab, tabs };
 };
 
 export default useTabs;

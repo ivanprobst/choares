@@ -4,12 +4,12 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, addDays } from "date-fns";
 
-import Layout from "../../components/Layout";
-import styles from "../../styles/Home.module.css";
-import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../utils/types";
-import { API_ROUTE_TASKS } from "../../utils/constants";
-import Button from "../../components/Button";
+import Layout from "../components/Layout";
+import styles from "../styles/Home.module.css";
+import useLocale from "../state/useLocale";
+import { APIResponseType, TaskDBType } from "../utils/types";
+import { API_ROUTE_TASKS } from "../utils/constants";
+import Button from "../components/Button";
 
 const NewTask: NextPage = () => {
   const { t } = useLocale();

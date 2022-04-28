@@ -1,8 +1,7 @@
-import { parseISO } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import prisma from "../../utils/prisma";
-import { isTaskDataType } from "../../utils/types";
+import prisma from "../../../utils/prisma";
+import { isTaskDataType } from "../../../utils/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -43,7 +42,7 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       data: taskData,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {

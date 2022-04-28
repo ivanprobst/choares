@@ -1,14 +1,18 @@
+import React from "react";
 import styles from "../styles/Home.module.css";
+import Spinner from "./Spinner";
 
 const Button = ({
   children,
   onClick,
   type = "green",
+  isLoading = false,
   disabled = false,
 }: {
   children: React.ReactNode;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: () => void;
   type?: "green" | "red" | "blue";
+  isLoading?: boolean;
   disabled?: boolean;
 }) => {
   const buttonStyle =
@@ -22,9 +26,10 @@ const Button = ({
     <button
       className={`${styles.button} ${buttonStyle}`}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isLoading || disabled}
     >
       {children}
+      {isLoading && <Spinner />}
     </button>
   );
 };

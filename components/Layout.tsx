@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
@@ -21,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Link href="/">{t.common.choares}</Link>
         </h1>
         <div>
-          <Link href="/tasks/tasks-create">{t.tasks.createTaskMenu}</Link>
+          <Link href="/tasks-create">{t.tasks.createTaskMenu}</Link>
         </div>
       </header>
 
