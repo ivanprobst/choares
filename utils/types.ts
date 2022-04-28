@@ -18,11 +18,19 @@ export interface TaskDataType {
   name: string;
   description?: string;
   dueDate?: string;
+  completed: boolean;
+  completedAt?: Date;
 }
 export type TaskDBType = DBBaseType & TaskDataType;
 export const isTaskDataType = (data: any): data is TaskDataType => {
   return !!data.name;
 };
 export const isTaskUpdateType = (data: any) => {
-  return !!data.name || !!data.description || !!data.dueDate;
+  return (
+    !!data.name ||
+    !!data.description ||
+    !!data.dueDate ||
+    !!data.completed !== undefined ||
+    !!data.completedAt
+  );
 };

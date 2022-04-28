@@ -17,5 +17,7 @@ model Task {
   name         String
   description  String?
   dueDate      DateTime?  @map(name: "due_date")
+  completed    Boolean    @default(false)
+  completedAt  DateTime?  @map(name: "completed_at")
   @@map(name: "tasks")
 }

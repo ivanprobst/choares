@@ -21,6 +21,35 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentTask, setCurrentTask] = useState<TaskDBType>(task);
 
+  const completeTaskHandler = async () => {
+    setIsLoading(true);
+
+    const updatedStatus = {
+      completed: !currentTask.completed,
+      completedAt: currentTask.completed ? null : new Date(),
+    };
+
+    const response = await fetch(`${API_ROUTE_TASKS}/${task.id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedStatus),
+    });
+    const responseJSON: APIResponseType = await response.json();
+
+    if (responseJSON.success) {
+      toast.success(t.tasks.successCompleteTask);
+      setCurrentTask(responseJSON.data);
+    } else {
+      toast.error(`${t.tasks.errorCompleteTask} (${responseJSON.error_type})`);
+      console.log("error_type: ", responseJSON.error_type);
+    }
+
+    setIsLoading(false);
+  };
+
   const rescheduleTaskHandler = async () => {
     setIsLoading(true);
 
@@ -85,12 +114,18 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       </section>
 
       <section className={styles.taskActions}>
+        <Button onClick={completeTaskHandler} isLoading={isLoading}>
+          {currentTask.completed
+            ? t.tasks.uncompleteTask
+            : t.tasks.completeTask}
+        </Button>
+
         <Button
           onClick={rescheduleTaskHandler}
           type="blue"
           isLoading={isLoading}
         >
-          {t.tasks.rescheduleTomorrow}
+          {t.tasks.rescheduleTaskTomorrow}
         </Button>
 
         <Button onClick={deleteTaskHandler} type="red" isLoading={isLoading}>

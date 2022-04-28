@@ -10,7 +10,6 @@ import useLocale from "../state/useLocale";
 import { APIResponseType, TaskDBType } from "../utils/types";
 import Spinner from "../components/Spinner";
 import { API_ROUTE_TASKS } from "../utils/constants";
-import Button from "../components/Button";
 import useTabs from "../hooks/useTabs";
 import { TabsContainer } from "../components/Tab";
 import BannerPageError from "../components/BannerPageError";
@@ -22,12 +21,6 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
   const openTaskHandler = () => {
     console.log("open task");
     router.push(`/task/${task.id}`);
-  };
-
-  const taskCompletionHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    toast.success(`Task completed: ${task.name}`);
-    console.log("TODO: complete the task");
   };
 
   return (
@@ -45,17 +38,15 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
         </p>
       </div>
       <div className={styles.tasksListConfirmation}>
-        <Button type="blue" onClick={taskCompletionHandler}>
+        {/* <Button type="blue" onClick={taskCompletionHandler}>
           {t.tasks.taskCompleted}
-        </Button>
+        </Button> */}
       </div>
     </li>
   );
 };
 
 const TaskList = ({ tasks }: { tasks?: Array<TaskDBType> }) => {
-  const { t } = useLocale();
-
   return tasks ? (
     <ul className={styles.tasksList}>
       {tasks.map((task) => (
