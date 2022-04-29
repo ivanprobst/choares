@@ -7,7 +7,7 @@ const BannerPageError = () => {
   const router = useRouter();
 
   const moveToListHandler = () => {
-    router.push("/");
+    router.push("/tasks-list");
   };
 
   return (

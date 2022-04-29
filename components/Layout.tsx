@@ -19,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <Link href="/">{t.common.choares}</Link>
+          <Link href="/tasks-list">{t.common.choares}</Link>
         </h1>
         <div>
           <Link href="/tasks-create">{t.tasks.createTaskMenu}</Link>

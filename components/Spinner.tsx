@@ -2,7 +2,7 @@ import styles from "../styles/Home.module.css";
 
 const Spinner = () => {
   return (
-    <svg className={styles.spinner} viewBox="0 0 50 50">
+    <svg className={styles.spinner} viewBox="0 0 50 50" stroke="currentColor">
       <circle
         className={styles.spinnerPath}
         cx="25"

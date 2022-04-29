@@ -43,7 +43,7 @@ const NewTask: NextPage = () => {
     if (responseJSON.success) {
       const taskData = responseJSON.data as TaskDBType;
       toast.success(`Success: task created: ${JSON.stringify(taskData)}`); // TODO: cleanup toast
-      router.push("/");
+      router.push("/tasks-list");
     } else {
       toast.error(`${t.tasks.errorCreateTask} (${responseJSON.error_type})`);
       console.log("error_type: ", responseJSON.error_type);

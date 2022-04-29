@@ -96,7 +96,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
     }
 
     setIsLoading(false);
-    router.push("/");
+    router.push("/tasks-list");
   };
 
   return (
@@ -173,7 +173,7 @@ const Task: NextPage = () => {
   }, [t, taskId]);
 
   const moveToListHandler = () => {
-    router.push("/");
+    router.push("/tasks-list");
   };
 
   return (
