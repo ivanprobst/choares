@@ -1,6 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
 
@@ -32,6 +34,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <nav className={styles.nav}>
           <Link href="/about">{t.about.title}</Link>
           <Link href="/settings">{t.settings.title}</Link>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              signOut();
+            }}
+          >
+            {t.common.signout}
+          </a>
         </nav>
       </footer>
     </div>

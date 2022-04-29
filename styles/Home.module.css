@@ -49,6 +49,21 @@
   gap: 0.5rem;
 }
 
+.authGuardianContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+  .authGuardianContainer h2 {
+    font-size: var(--font-size-biggest);
+    margin-bottom: 1rem;
+  }
+  .authGuardianContainer h3 {
+    margin-bottom: 1rem;
+    font-size: var(--font-size-normal);
+  }
+
 .formBlock {
   margin-bottom: 1rem;
 }
