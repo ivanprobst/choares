@@ -14,6 +14,8 @@ model Task {
   id           String     @default(uuid()) @id
   createdAt    DateTime   @default(now()) @map(name: "created_at")
   updatedAt    DateTime   @updatedAt @map(name: "updated_at")
+  creator      User       @relation(fields: [creatorId], references: [id])
+  creatorId    String
   name         String
   description  String?
   dueDate      DateTime?  @map(name: "due_date")
@@ -62,6 +64,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  tasksCreated  Task[]
 
   @@map("users")
 }

@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 
 import prisma from "../../../utils/prisma";
 import { isTaskUpdateType } from "../../../utils/types";
@@ -7,6 +8,37 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const { taskId } = req.query;
+  const session = await getSession({ req });
+
+  if (!session || !session.user) {
+    return res
+      .status(403)
+      .json({ success: false, error_type: "session_invalid" });
+  }
+
+  if (!taskId || Array.isArray(taskId)) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: "taskId_not_found" });
+  }
+
+  const taskToUpdate = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!taskToUpdate) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: "task_not_found" });
+  }
+
+  if (taskToUpdate.creatorId !== session.user.id) {
+    return res
+      .status(403)
+      .json({ success: false, error_type: "user_missing_rights" });
+  }
+
   if (req.method === "GET") {
     await handleGet(req, res);
   } else if (req.method === "PUT") {
@@ -25,15 +57,11 @@ export default async function handler(
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
 
-  if (!taskId || Array.isArray(taskId)) {
-    return res
-      .status(400)
-      .json({ success: false, error_type: "taskId_not_found" });
-  }
-
   let task = undefined;
   try {
-    task = await prisma.task.findUnique({ where: { id: taskId } });
+    task = await prisma.task.findUnique({
+      where: { id: taskId as string },
+    });
   } catch (e) {
     console.log(e);
   }
@@ -52,12 +80,6 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
   const taskData = req.body;
 
-  if (!taskId || Array.isArray(taskId)) {
-    return res
-      .status(400)
-      .json({ success: false, error_type: "taskId_not_found" });
-  }
-
   if (!taskData) {
     return res
       .status(400)
@@ -73,7 +95,7 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   let task = undefined;
   try {
     task = await prisma.task.update({
-      where: { id: taskId },
+      where: { id: taskId as string },
       data: taskData,
     });
   } catch (e) {
@@ -92,15 +114,11 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
 
-  if (!taskId || Array.isArray(taskId)) {
-    return res
-      .status(400)
-      .json({ success: false, error_type: "taskId_not_found" });
-  }
-
   let task = undefined;
   try {
-    task = await prisma.task.delete({ where: { id: taskId } });
+    task = await prisma.task.delete({
+      where: { id: taskId as string },
+    });
   } catch (e) {
     console.log(e);
   }

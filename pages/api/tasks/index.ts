@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 
 import prisma from "../../../utils/prisma";
 import { isTaskDataType } from "../../../utils/types";
@@ -7,6 +8,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getSession({ req });
+  if (!session || !session.user) {
+    return res
+      .status(403)
+      .json({ success: false, error_type: "session_invalid" });
+  }
+
   if (req.method === "GET") {
     await handleGet(req, res);
   } else if (req.method === "POST") {
@@ -23,6 +31,7 @@ export default async function handler(
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   console.info("body: ", req.body);
   const taskData = req.body;
+  const session = await getSession({ req });
 
   if (!taskData) {
     return res
@@ -36,10 +45,15 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, error_type: "data_format_incorrect" });
   }
 
+  const computedTaskData = {
+    ...taskData,
+    creator: { connect: { id: session?.user?.id } },
+  };
+
   let task = undefined;
   try {
     task = await prisma.task.create({
-      data: taskData,
+      data: computedTaskData,
     });
   } catch (e) {
     console.error(e);
@@ -55,9 +69,13 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
+
   let tasks = undefined;
   try {
-    tasks = await prisma.task.findMany();
+    tasks = await prisma.task.findMany({
+      where: { creator: { id: session?.user?.id } },
+    });
   } catch (e) {
     console.log(e);
   }
