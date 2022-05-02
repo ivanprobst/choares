@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 
 import prisma from "../../../utils/prisma";
-import { isTaskUpdateType } from "../../../utils/types";
+import { isTaskUpdateType } from "../../../types";
 
 export default async function handler(
   req: NextApiRequest,

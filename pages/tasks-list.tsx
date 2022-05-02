@@ -7,7 +7,7 @@ import { format, isToday } from "date-fns";
 import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
-import { APIResponseType, TaskDBType } from "../utils/types";
+import { APIResponseType, TaskDBType } from "../types";
 import Spinner from "../components/Spinner";
 import { API_ROUTE_TASKS } from "../utils/constants";
 import useTabs from "../hooks/useTabs";

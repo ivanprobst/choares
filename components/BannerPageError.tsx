@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import useLocale from "../state/useLocale";
+import { ROUTES } from "../utils/constants";
 import Button from "./Button";
 
 const BannerPageError = () => {
@@ -7,7 +8,7 @@ const BannerPageError = () => {
   const router = useRouter();
 
   const moveToListHandler = () => {
-    router.push("/tasks-list");
+    router.push(ROUTES.tasksList);
   };
 
   return (

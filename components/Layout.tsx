@@ -5,6 +5,7 @@ import { signOut } from "next-auth/react";
 
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
+import { ROUTES } from "../utils/constants";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { t } = useLocale();
@@ -21,10 +22,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <Link href="/tasks-list">{t.common.choares}</Link>
+          <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
         </h1>
         <div>
-          <Link href="/tasks-create">{t.tasks.createTaskMenu}</Link>
+          <Link href={ROUTES.tasksCreate}>{t.tasks.createTaskMenu}</Link>
         </div>
       </header>
 
@@ -32,8 +33,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <footer className={styles.footer}>
         <nav className={styles.nav}>
-          <Link href="/about">{t.about.title}</Link>
-          <Link href="/settings">{t.settings.title}</Link>
+          <Link href={ROUTES.about}>{t.about.title}</Link>
+          <Link href={ROUTES.settings}>{t.settings.title}</Link>
           <a
             href="#"
             onClick={(e) => {

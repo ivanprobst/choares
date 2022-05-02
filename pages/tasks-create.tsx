@@ -7,8 +7,8 @@ import { format, addDays } from "date-fns";
 import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
-import { APIResponseType, TaskDBType } from "../utils/types";
-import { API_ROUTE_TASKS } from "../utils/constants";
+import { APIResponseType, TaskDBType } from "../types";
+import { API_ROUTE_TASKS, ROUTES } from "../utils/constants";
 import Button from "../components/Button";
 
 const NewTask: NextPage = () => {
@@ -43,7 +43,7 @@ const NewTask: NextPage = () => {
     if (responseJSON.success) {
       const taskData = responseJSON.data as TaskDBType;
       toast.success(`Success: task created: ${JSON.stringify(taskData)}`); // TODO: cleanup toast
-      router.push("/tasks-list");
+      router.push(ROUTES.tasksList);
     } else {
       toast.error(`${t.tasks.errorCreateTask} (${responseJSON.error_type})`);
       console.log("error_type: ", responseJSON.error_type);

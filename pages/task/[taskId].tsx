@@ -6,8 +6,8 @@ import toast from "react-hot-toast";
 import styles from "../../styles/Home.module.css";
 import Layout from "../../components/Layout";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../utils/types";
-import { API_ROUTE_TASKS } from "../../utils/constants";
+import { APIResponseType, TaskDBType } from "../../types";
+import { API_ROUTE_TASKS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
 import { addDays, format } from "date-fns";
@@ -96,7 +96,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
     }
 
     setIsLoading(false);
-    router.push("/tasks-list");
+    router.push(ROUTES.tasksList);
   };
 
   return (
@@ -173,7 +173,7 @@ const Task: NextPage = () => {
   }, [t, taskId]);
 
   const moveToListHandler = () => {
-    router.push("/tasks-list");
+    router.push(ROUTES.tasksList);
   };
 
   return (
