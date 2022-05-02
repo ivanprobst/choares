@@ -1,11 +1,14 @@
 import type { NextPage } from "next";
-import TasksListPage from "./tasks-list";
+import Link from "next/link";
+
+import Layout from "../components/Layout";
+import { ROUTES } from "../utils/constants";
 
 const Home: NextPage = () => {
   return (
-    <>
-      <TasksListPage />
-    </>
+    <Layout>
+      <Link href={ROUTES.tasksList}>Go to task list</Link>
+    </Layout>
   );
 };
 

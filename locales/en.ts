@@ -1,7 +1,12 @@
 export const en = {
   common: {
     choares: "Choares",
+    choaresTitle: "Welcome to Choares!",
+    choaresSubtitle: "Get your home chores done, together.",
     description: "Your home chores, shared",
+    authorizing: "Authorizing...",
+    signin: "Sign in",
+    signout: "Sign out",
   },
   tasks: {
     task: "Task",
