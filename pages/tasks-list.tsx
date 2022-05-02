@@ -64,13 +64,20 @@ const TasksListPage: NextPage = () => {
   const [tasks, setTasks] = useState<Array<TaskDBType> | undefined>(undefined);
 
   const todayTasks = tasks?.filter(
-    (task) => task.dueDate && isToday(new Date(task.dueDate))
+    (task) => task.dueDate && isToday(new Date(task.dueDate)) && !task.completed
   );
-  const completedTasks = tasks?.filter((task) => task.completed);
+  const allUncompletedTasks = tasks?.filter((task) => !task.completed);
+  const allCompletedTasks = tasks?.filter((task) => task.completed);
   const Tabs = [
     { title: "Today's task", content: <TaskList tasks={todayTasks} /> },
-    { title: "All tasks", content: <TaskList tasks={tasks} /> },
-    { title: "Completed tasks", content: <TaskList tasks={completedTasks} /> },
+    {
+      title: "Uncompleted tasks",
+      content: <TaskList tasks={allUncompletedTasks} />,
+    },
+    {
+      title: "Completed tasks",
+      content: <TaskList tasks={allCompletedTasks} />,
+    },
   ];
   const { CurrentTab, tabs } = useTabs(Tabs);
 
