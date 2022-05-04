@@ -172,6 +172,9 @@
 .groupMembers {
   font-style: italic;
 }
+.groupDetails {
+  margin-bottom: 1rem;
+}
 
 .tabsContainer {
   display: flex;

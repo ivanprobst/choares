@@ -9,7 +9,7 @@ import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
 import { APIResponseType, TaskDBType } from "../types";
 import Spinner from "../components/Spinner";
-import { API_ROUTE_TASKS } from "../utils/constants";
+import { ENDPOINTS, ROUTES } from "../utils/constants";
 import useTabs from "../hooks/useTabs";
 import { TabsContainer } from "../components/Tab";
 import BannerPageError from "../components/BannerPageError";
@@ -20,7 +20,7 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
 
   const openTaskHandler = () => {
     console.log("open task");
-    router.push(`/task/${task.id}`);
+    router.push(`${ROUTES.task}/${task.id}`);
   };
 
   return (
@@ -85,7 +85,7 @@ const TasksListPage: NextPage = () => {
     const fetchTasks = async () => {
       setIsLoading(true);
 
-      const response = await fetch(API_ROUTE_TASKS, {
+      const response = await fetch(ENDPOINTS.tasks, {
         method: "GET",
       });
       const responseJSON: APIResponseType = await response.json();

@@ -7,7 +7,7 @@ import styles from "../../styles/Home.module.css";
 import Layout from "../../components/Layout";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, TaskDBType } from "../../types";
-import { API_ROUTE_TASKS, ROUTES } from "../../utils/constants";
+import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
 import { addDays, format } from "date-fns";
@@ -29,7 +29,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       completedAt: currentTask.completed ? null : new Date(),
     };
 
-    const response = await fetch(`${API_ROUTE_TASKS}/${task.id}`, {
+    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -44,7 +44,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       setCurrentTask(responseJSON.data);
     } else {
       toast.error(`${t.tasks.errorCompleteTask} (${responseJSON.error_type})`);
-      console.log("error_type: ", responseJSON.error_type);
+      console.error("error_type: ", responseJSON.error_type);
     }
 
     setIsLoading(false);
@@ -57,7 +57,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       dueDate: addDays(new Date(), 1),
     };
 
-    const response = await fetch(`${API_ROUTE_TASKS}/${task.id}`, {
+    const response = await fetch(`${ENDPOINTS.tasks}/${currentTask.id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -74,7 +74,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       toast.error(
         `${t.tasks.errorRescheduleTask} (${responseJSON.error_type})`
       );
-      console.log("error_type: ", responseJSON.error_type);
+      console.error("error_type: ", responseJSON.error_type);
     }
 
     setIsLoading(false);
@@ -83,7 +83,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const deleteTaskHandler = async () => {
     setIsLoading(true);
 
-    const response = await fetch(`${API_ROUTE_TASKS}/${task.id}`, {
+    const response = await fetch(`${ENDPOINTS.tasks}/${currentTask.id}`, {
       method: "DELETE",
     });
     const responseJSON: APIResponseType = await response.json();
@@ -92,7 +92,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       toast.success(t.tasks.successDeleteTask);
     } else {
       toast.error(`${t.tasks.errorDeleteTask} (${responseJSON.error_type})`);
-      console.log("error_type: ", responseJSON.error_type);
+      console.error("error_type: ", responseJSON.error_type);
     }
 
     setIsLoading(false);
@@ -149,7 +149,7 @@ const Task: NextPage = () => {
     const fetchTask = async () => {
       setIsLoading(true);
 
-      const response = await fetch(`${API_ROUTE_TASKS}/${taskId}`, {
+      const response = await fetch(`${ENDPOINTS.tasks}/${taskId}`, {
         method: "GET",
       });
       const responseJSON: APIResponseType = await response.json();
@@ -159,7 +159,7 @@ const Task: NextPage = () => {
       } else {
         setTask(undefined);
         toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.log("error_type: ", responseJSON.error_type);
+        console.error("error_type: ", responseJSON.error_type);
       }
 
       setIsLoading(false);

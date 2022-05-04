@@ -8,7 +8,7 @@ import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
 import { APIResponseType, TaskDBType } from "../types";
-import { API_ROUTE_TASKS, ROUTES } from "../utils/constants";
+import { ENDPOINTS, ROUTES } from "../utils/constants";
 import Button from "../components/Button";
 
 const NewTask: NextPage = () => {
@@ -30,7 +30,7 @@ const NewTask: NextPage = () => {
       dueDate: new Date(dueDate) || null,
     };
 
-    const response = await fetch(API_ROUTE_TASKS, {
+    const response = await fetch(ENDPOINTS.tasks, {
       method: "POST",
       headers: {
         Accept: "application/json",

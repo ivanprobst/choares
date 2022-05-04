@@ -7,7 +7,7 @@ import Layout from "../../components/Layout";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
-import { API_ROUTE_GROUPS, ROUTES } from "../../utils/constants";
+import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 
 const GroupCreate: NextPage = () => {
@@ -23,7 +23,7 @@ const GroupCreate: NextPage = () => {
       name: name || null,
     };
 
-    const response = await fetch(API_ROUTE_GROUPS, {
+    const response = await fetch(ENDPOINTS.groups, {
       method: "POST",
       headers: {
         Accept: "application/json",

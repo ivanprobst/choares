@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 import Layout from "../../components/Layout";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
-import { API_ROUTE_GROUPS, ROUTES } from "../../utils/constants";
+import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 
 const GroupList = ({ groups }: { groups?: Array<GroupDBType> }) => {
@@ -20,11 +21,13 @@ const GroupList = ({ groups }: { groups?: Array<GroupDBType> }) => {
     <ul className={styles.groupList}>
       {groups.map((group) => (
         <li className={styles.groupItem} key={group.id}>
-          <h3>{group.name}</h3>
+          <h3>
+            <Link href={`${ROUTES.group}/${group.id}`}>{group.name}</Link>
+          </h3>
           <p className={styles.groupMembers}>
             <>
               {`${t.groups.members}: `}
-              {group.members.length > 0
+              {group.members?.length > 0
                 ? group.members.map((member) => member.user.name).join(", ")
                 : t.groups.noMembers}
             </>
@@ -47,7 +50,7 @@ const Groups: NextPage = () => {
     const fetchGroups = async () => {
       setIsLoading(true);
 
-      const response = await fetch(API_ROUTE_GROUPS, {
+      const response = await fetch(ENDPOINTS.groups, {
         method: "GET",
       });
       const responseJSON: APIResponseType = await response.json();

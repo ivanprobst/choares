@@ -37,6 +37,7 @@ export const en = {
   },
   groups: {
     title: "Groups",
+    backGroupList: "Back to groups list",
     members: "Members",
     createGroupTitle: "Create group",
     groupLabelName: "Group name",
@@ -44,8 +45,13 @@ export const en = {
     notInGroup: "You are not part of any group",
     noMembers: "No members added",
     successGroupCreated: "Success: group created.",
+    successAddMember: "Success: member added.",
     errorLoadGroups: "Error: failed to load groups.",
     errorCreateGroup: "Error: failed to create group.",
+    errorAddMember: "Error: failed to add member.",
+    newMemberLabel: "New member's email",
+    addUserPlaceholder: "new.member@email.com",
+    newMemberButton: "Add new member",
   },
   settings: {
     title: "Settings",
