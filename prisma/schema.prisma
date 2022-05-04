@@ -25,6 +25,18 @@ model Task {
   @@map(name: "tasks")
 }
 
+model Group {
+  id           String     @default(uuid()) @id
+  createdAt    DateTime   @default(now()) @map(name: "created_at")
+  updatedAt    DateTime   @updatedAt @map(name: "updated_at")
+  creator      User       @relation(fields: [creatorId], references: [id])
+  creatorId    String
+  members      GroupMembers[]
+  name         String
+
+  @@map(name: "groups") 
+}
+
 model Account {
   id                 String  @id @default(cuid())
   userId             String
@@ -65,6 +77,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   tasksCreated  Task[]
+  groupsCreated Group[]
+  groupsMember  GroupMembers[]
 
   @@map("users")
 }
@@ -76,4 +90,18 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model GroupMembers {
+  createdAt    DateTime   @default(now()) @map(name: "created_at")
+  updatedAt    DateTime   @updatedAt @map(name: "updated_at")
+  createdBy    String     @map(name: "created_by")
+  group        Group      @relation(fields: [groupId], references: [id])
+  groupId      String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+  
+
+  @@id([groupId, userId])
+  @@map("groupmembers")
 }

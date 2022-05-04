@@ -163,6 +163,16 @@
     margin-bottom: 1rem;
   }
 
+.groupList {
+    margin: 1rem 0;
+  }  
+.groupItem {
+  margin-bottom: 1rem;
+}
+.groupMembers {
+  font-style: italic;
+}
+
 .tabsContainer {
   display: flex;
   margin-bottom: 1rem;

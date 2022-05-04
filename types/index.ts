@@ -34,3 +34,18 @@ export const isTaskUpdateType = (data: any) => {
     !!data.completedAt
   );
 };
+
+export interface GroupDataType {
+  name: string;
+  members: Array<{ user: UserDataType }>;
+}
+export type GroupDBType = DBBaseType & GroupDataType;
+export const isGroupCreationType = (data: any): data is GroupDataType => {
+  return !!data.name;
+};
+
+export interface UserDataType {
+  name: string;
+  email: string;
+}
+export type UserDBType = DBBaseType & UserDataType;

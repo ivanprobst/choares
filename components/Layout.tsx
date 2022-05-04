@@ -34,6 +34,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <footer className={styles.footer}>
         <nav className={styles.nav}>
           <Link href={ROUTES.about}>{t.about.title}</Link>
+          <Link href={ROUTES.groups}>{t.groups.title}</Link>
           <Link href={ROUTES.settings}>{t.settings.title}</Link>
           <a
             href="#"
