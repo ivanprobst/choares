@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
 import styles from "../../styles/Home.module.css";
-import Layout from "../../components/Layout";
+import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, TaskDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
@@ -177,7 +177,7 @@ const Task: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <LayoutAuth>
       <TabsContainer>
         <Tab onClick={moveToListHandler} current={true}>
           {t.tasks.backTasksList}
@@ -190,7 +190,7 @@ const Task: NextPage = () => {
       ) : (
         <BannerPageError />
       )}
-    </Layout>
+    </LayoutAuth>
   );
 };
 

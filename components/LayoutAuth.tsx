@@ -1,14 +1,27 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
 import { ROUTES } from "../utils/constants";
+import Spinner from "./Spinner";
+import { useRouter } from "next/router";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const LayoutAuth = ({ children }: { children: React.ReactNode }) => {
   const { t } = useLocale();
+  const router = useRouter();
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push(ROUTES.signin);
+    },
+  });
+
+  if (status === "loading") {
+    return <Spinner />;
+  }
 
   return (
     <div className={styles.container}>
@@ -32,10 +45,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <main className={styles.main}>{children}</main>
 
       <footer className={styles.footer}>
+        <p>{t.about.copyright}</p>
         <nav className={styles.nav}>
-          <Link href={ROUTES.about}>{t.about.title}</Link>
           <Link href={ROUTES.groups}>{t.groups.title}</Link>
-          <Link href={ROUTES.settings}>{t.settings.title}</Link>
           <a
             href="#"
             onClick={(e) => {
@@ -51,4 +63,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default Layout;
+export default LayoutAuth;

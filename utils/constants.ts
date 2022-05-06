@@ -6,12 +6,11 @@ export const ENDPOINTS = {
 
 export const ROUTES = {
   home: "/",
-  task: "/task",
-  tasksList: "/tasks-list",
-  tasksCreate: "/tasks-create",
+  signin: "/signin",
+  task: "/tasks",
+  tasksList: "/tasks/list",
+  tasksCreate: "/tasks/create",
   group: "/groups",
   groups: "/groups/list",
   groupsCreate: "/groups/create",
-  about: "/about",
-  settings: "/settings",
 };

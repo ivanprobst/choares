@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-import Layout from "../../components/Layout";
+import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
@@ -72,11 +72,11 @@ const Groups: NextPage = () => {
   }, [t]);
 
   return (
-    <Layout>
+    <LayoutAuth>
       <h2>{t.groups.title}</h2>
       <a href={ROUTES.groupsCreate}>Create a new group</a>
       {isLoading ? <Spinner /> : <GroupList groups={groups} />}
-    </Layout>
+    </LayoutAuth>
   );
 };
 

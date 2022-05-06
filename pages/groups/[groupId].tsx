@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
 import styles from "../../styles/Home.module.css";
-import Layout from "../../components/Layout";
+import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
@@ -19,6 +19,11 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentGroup, setCurrentGroup] = useState<GroupDBType>(group);
   const [userEmail, setUserEmail] = useState<string>("");
+
+  const setAsCurrentGroup = async () => {
+    localStorage.setItem("groupId", currentGroup.id);
+    toast.success(`group ${currentGroup.name} set as current group`);
+  };
 
   const addMemberHandler = async () => {
     setIsLoading(true);
@@ -66,6 +71,10 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
       </section>
 
       <section className={styles.taskActions}>
+        <Button onClick={setAsCurrentGroup} isLoading={isLoading} type="blue">
+          Switch to this group
+        </Button>
+
         <div className={styles.formBlock}>
           <label className={styles.label} htmlFor="group-new-member">
             {t.groups.newMemberLabel}
@@ -133,7 +142,7 @@ const Group: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <LayoutAuth>
       <TabsContainer>
         <Tab onClick={moveToListHandler} current={true}>
           {t.groups.backGroupList}
@@ -146,7 +155,7 @@ const Group: NextPage = () => {
       ) : (
         <BannerPageError />
       )}
-    </Layout>
+    </LayoutAuth>
   );
 };
 

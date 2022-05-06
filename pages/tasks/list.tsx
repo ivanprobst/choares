@@ -4,15 +4,15 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, isToday } from "date-fns";
 
-import Layout from "../components/Layout";
-import styles from "../styles/Home.module.css";
-import useLocale from "../state/useLocale";
-import { APIResponseType, TaskDBType } from "../types";
-import Spinner from "../components/Spinner";
-import { ENDPOINTS, ROUTES } from "../utils/constants";
-import useTabs from "../hooks/useTabs";
-import { TabsContainer } from "../components/Tab";
-import BannerPageError from "../components/BannerPageError";
+import LayoutAuth from "../../components/LayoutAuth";
+import styles from "../../styles/Home.module.css";
+import useLocale from "../../state/useLocale";
+import { APIResponseType, TaskDBType } from "../../types";
+import Spinner from "../../components/Spinner";
+import { ENDPOINTS, ROUTES } from "../../utils/constants";
+import useTabs from "../../hooks/useTabs";
+import { TabsContainer } from "../../components/Tab";
+import BannerPageError from "../../components/BannerPageError";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
@@ -108,10 +108,10 @@ const TasksListPage: NextPage = () => {
 
   return (
     <>
-      <Layout>
+      <LayoutAuth>
         <TabsContainer>{tabs.map((tab) => tab)}</TabsContainer>
         {isLoading ? <Spinner /> : <CurrentTab />}
-      </Layout>
+      </LayoutAuth>
     </>
   );
 };

@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
-import Layout from "../../components/Layout";
+import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
@@ -48,7 +48,7 @@ const GroupCreate: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <LayoutAuth>
       <section>
         <h2>{t.groups.createGroupTitle}</h2>
 
@@ -71,7 +71,7 @@ const GroupCreate: NextPage = () => {
           {t.groups.createGroupButton}
         </Button>
       </section>
-    </Layout>
+    </LayoutAuth>
   );
 };
 
