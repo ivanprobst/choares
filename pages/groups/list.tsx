@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -9,9 +9,12 @@ import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
+import GroupContext from "../../state/groupContext";
 
 const GroupList = ({ groups }: { groups?: Array<GroupDBType> }) => {
   const { t } = useLocale();
+
+  const { currentGroupId } = useContext(GroupContext);
 
   return !groups ? (
     <p>{t.groups.errorLoadGroups}</p>
@@ -23,6 +26,7 @@ const GroupList = ({ groups }: { groups?: Array<GroupDBType> }) => {
         <li className={styles.groupItem} key={group.id}>
           <h3>
             <Link href={`${ROUTES.group}/${group.id}`}>{group.name}</Link>
+            {currentGroupId === group.id ? ` (${t.common.current})` : ""}
           </h3>
           <p className={styles.groupMembers}>
             <>

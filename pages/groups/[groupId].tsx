@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -12,6 +12,7 @@ import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
+import GroupContext from "../../state/groupContext";
 
 const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const { t } = useLocale();
@@ -20,9 +21,13 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const [currentGroup, setCurrentGroup] = useState<GroupDBType>(group);
   const [userEmail, setUserEmail] = useState<string>("");
 
+  const { currentGroupId, setCurrentGroupId } = useContext(GroupContext);
+  const isCurrentGroup = currentGroupId === group.id;
+
   const setAsCurrentGroup = async () => {
+    setCurrentGroupId && setCurrentGroupId(currentGroup.id);
     localStorage.setItem("groupId", currentGroup.id);
-    toast.success(`group ${currentGroup.name} set as current group`);
+    toast.success(`${t.groups.successGroupSwitch}${currentGroup.name}`);
   };
 
   const addMemberHandler = async () => {
@@ -71,8 +76,14 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
       </section>
 
       <section className={styles.taskActions}>
-        <Button onClick={setAsCurrentGroup} isLoading={isLoading} type="blue">
-          Switch to this group
+        <Button
+          onClick={setAsCurrentGroup}
+          isLoading={isLoading}
+          type="blue"
+          disabled={isCurrentGroup}
+        >
+          {t.groups.switchGroupButton}
+          {isCurrentGroup ? ` (${t.groups.alreadyCurrentGroup})` : ""}
         </Button>
 
         <div className={styles.formBlock}>

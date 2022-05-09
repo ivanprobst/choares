@@ -14,3 +14,7 @@ export const ROUTES = {
   groups: "/groups/list",
   groupsCreate: "/groups/create",
 };
+
+export const LOCAL_STORAGE = {
+  groupId: "groupId",
+};
