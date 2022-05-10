@@ -12,7 +12,7 @@ import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
-import GroupContext from "../../state/groupContext";
+import GroupContext from "../../state/GroupContext";
 
 const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const { t } = useLocale();

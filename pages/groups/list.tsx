@@ -9,7 +9,7 @@ import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
-import GroupContext from "../../state/groupContext";
+import GroupContext from "../../state/GroupContext";
 
 const GroupList = ({ groups }: { groups?: Array<GroupDBType> }) => {
   const { t } = useLocale();

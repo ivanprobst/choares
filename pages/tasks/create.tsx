@@ -10,7 +10,7 @@ import useLocale from "../../state/useLocale";
 import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
-import GroupContext from "../../state/groupContext";
+import GroupContext from "../../state/GroupContext";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();
@@ -107,7 +107,7 @@ const TaskCreationForm = () => {
   );
 };
 
-const CreateTask: NextPage = () => {
+const CreateTaskPage: NextPage = () => {
   const { t } = useLocale();
 
   return (
@@ -118,4 +118,4 @@ const CreateTask: NextPage = () => {
   );
 };
 
-export default CreateTask;
+export default CreateTaskPage;

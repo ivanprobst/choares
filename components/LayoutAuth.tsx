@@ -8,7 +8,7 @@ import useLocale from "../state/useLocale";
 import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useRouter } from "next/router";
-import GroupContext from "../state/groupContext";
+import GroupContext from "../state/GroupContext";
 import { APIResponseType } from "../types";
 import toast from "react-hot-toast";
 
