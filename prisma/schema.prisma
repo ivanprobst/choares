@@ -16,6 +16,8 @@ model Task {
   updatedAt    DateTime   @updatedAt @map(name: "updated_at")
   creator      User       @relation(fields: [creatorId], references: [id])
   creatorId    String
+  group        Group      @relation(fields: [groupId], references: [id])
+  groupId      String
   name         String
   description  String?
   dueDate      DateTime?  @map(name: "due_date")
@@ -33,6 +35,7 @@ model Group {
   creatorId    String
   members      GroupMembers[]
   name         String
+  tasks        Task[]
 
   @@map(name: "groups") 
 }

@@ -45,9 +45,13 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, error_type: "data_format_incorrect" });
   }
 
+  const { name, description, dueDate } = taskData;
   const computedTaskData = {
-    ...taskData,
+    name,
+    description,
+    dueDate,
     creator: { connect: { id: session?.user?.id } },
+    group: { connect: { id: taskData.groupId } },
   };
 
   let task = undefined;

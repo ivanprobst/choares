@@ -49,28 +49,26 @@ const GroupCreate: NextPage = () => {
 
   return (
     <LayoutAuth>
-      <section>
-        <h2>{t.groups.createGroupTitle}</h2>
+      <h2>{t.groups.createGroupTitle}</h2>
 
-        <div className={styles.formBlock}>
-          <label className={styles.label} htmlFor="group-name">
-            {t.groups.groupLabelName} *
-          </label>
-          <input
-            id="group-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={styles.input}
-            placeholder={t.groups.groupLabelName}
-            required
-          />
-        </div>
+      <div className={styles.formBlock}>
+        <label className={styles.label} htmlFor="group-name">
+          {t.groups.groupLabelName} *
+        </label>
+        <input
+          id="group-name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className={styles.input}
+          placeholder={t.groups.groupLabelName}
+          required
+        />
+      </div>
 
-        <Button onClick={createGroupHandler} disabled={submitDisabled}>
-          {t.groups.createGroupButton}
-        </Button>
-      </section>
+      <Button onClick={createGroupHandler} disabled={submitDisabled}>
+        {t.groups.createGroupButton}
+      </Button>
     </LayoutAuth>
   );
 };

@@ -15,6 +15,7 @@ interface DBBaseType {
 }
 
 export interface TaskDataType {
+  groupId: string;
   name: string;
   description?: string;
   dueDate?: string;
@@ -23,7 +24,7 @@ export interface TaskDataType {
 }
 export type TaskDBType = DBBaseType & TaskDataType;
 export const isTaskDataType = (data: any): data is TaskDataType => {
-  return !!data.name;
+  return !!data.name && !!data.groupId;
 };
 export const isTaskUpdateType = (data: any) => {
   return (
