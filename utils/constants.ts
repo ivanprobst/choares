@@ -1,9 +1,20 @@
-export const API_ROUTE_TASKS = "/api/tasks";
+export const ENDPOINTS = {
+  tasks: "/api/tasks",
+  groups: "/api/groups",
+  subMembers: "members",
+};
 
 export const ROUTES = {
   home: "/",
-  tasksList: "/tasks-list",
-  tasksCreate: "/tasks-create",
-  about: "/about",
-  settings: "/settings",
+  signin: "/signin",
+  task: "/tasks",
+  tasksList: "/tasks/list",
+  tasksCreate: "/tasks/create",
+  group: "/groups",
+  groups: "/groups/list",
+  groupsCreate: "/groups/create",
+};
+
+export const LOCAL_STORAGE = {
+  groupId: "groupId",
 };

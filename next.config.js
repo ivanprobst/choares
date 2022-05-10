@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/tasks-list",
+        destination: "/tasks/list",
         permanent: true,
         locale: false,
       },

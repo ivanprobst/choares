@@ -18,20 +18,9 @@ export default NextAuth({
     brandColor: "212124",
   },
   callbacks: {
-    session: async ({ session, token }) => {
-      if (session?.user) {
-        session.user.id = token.uid as string;
-      }
+    session: async ({ session, user }) => {
+      session.user.id = user.id;
       return session;
     },
-    jwt: async ({ user, token }) => {
-      if (user) {
-        token.uid = user.id;
-      }
-      return token;
-    },
-  },
-  session: {
-    strategy: "jwt",
   },
 });

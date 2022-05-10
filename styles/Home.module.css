@@ -38,11 +38,13 @@
 }
 
 .footer {
+  display: flex;
   width: 100%;
   padding: 0.5rem 1rem;
   border-top: 2px solid var(--color-pink-light);
 }
 .nav {
+  margin-left: auto;
   display: flex;
   justify-content: flex-end;
   align-content: center;
@@ -162,6 +164,19 @@
   .taskActions button {
     margin-bottom: 1rem;
   }
+
+.groupList {
+    margin: 1rem 0;
+  }  
+.groupItem {
+  margin-bottom: 1rem;
+}
+.groupMembers {
+  font-style: italic;
+}
+.groupDetails {
+  margin-bottom: 1rem;
+}
 
 .tabsContainer {
   display: flex;

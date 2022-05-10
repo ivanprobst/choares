@@ -15,6 +15,7 @@ interface DBBaseType {
 }
 
 export interface TaskDataType {
+  groupId: string;
   name: string;
   description?: string;
   dueDate?: string;
@@ -23,7 +24,7 @@ export interface TaskDataType {
 }
 export type TaskDBType = DBBaseType & TaskDataType;
 export const isTaskDataType = (data: any): data is TaskDataType => {
-  return !!data.name;
+  return !!data.name && !!data.groupId;
 };
 export const isTaskUpdateType = (data: any) => {
   return (
@@ -34,3 +35,18 @@ export const isTaskUpdateType = (data: any) => {
     !!data.completedAt
   );
 };
+
+export interface GroupDataType {
+  name: string;
+  members: Array<{ user: UserDataType }>;
+}
+export type GroupDBType = DBBaseType & GroupDataType;
+export const isGroupCreationType = (data: any): data is GroupDataType => {
+  return !!data.name;
+};
+
+export interface UserDataType {
+  name: string;
+  email: string;
+}
+export type UserDBType = DBBaseType & UserDataType;

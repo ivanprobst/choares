@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, isToday } from "date-fns";
 
-import Layout from "../components/Layout";
-import styles from "../styles/Home.module.css";
-import useLocale from "../state/useLocale";
-import { APIResponseType, TaskDBType } from "../types";
-import Spinner from "../components/Spinner";
-import { API_ROUTE_TASKS } from "../utils/constants";
-import useTabs from "../hooks/useTabs";
-import { TabsContainer } from "../components/Tab";
-import BannerPageError from "../components/BannerPageError";
+import LayoutAuth from "../../components/LayoutAuth";
+import styles from "../../styles/Home.module.css";
+import useLocale from "../../state/useLocale";
+import { APIResponseType, TaskDBType } from "../../types";
+import Spinner from "../../components/Spinner";
+import { ENDPOINTS, ROUTES } from "../../utils/constants";
+import useTabs from "../../hooks/useTabs";
+import { TabsContainer } from "../../components/Tab";
+import BannerPageError from "../../components/BannerPageError";
+import GroupContext from "../../state/GroupContext";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
@@ -20,7 +21,7 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
 
   const openTaskHandler = () => {
     console.log("open task");
-    router.push(`/task/${task.id}`);
+    router.push(`${ROUTES.task}/${task.id}`);
   };
 
   return (
@@ -46,7 +47,7 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
   );
 };
 
-const TaskList = ({ tasks }: { tasks?: Array<TaskDBType> }) => {
+const TasksList = ({ tasks }: { tasks: Array<TaskDBType> | undefined }) => {
   return tasks ? (
     <ul className={styles.tasksList}>
       {tasks.map((task) => (
@@ -58,10 +59,12 @@ const TaskList = ({ tasks }: { tasks?: Array<TaskDBType> }) => {
   );
 };
 
-const TasksListPage: NextPage = () => {
+const TasksListPanel = () => {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tasks, setTasks] = useState<Array<TaskDBType> | undefined>(undefined);
+
+  const { currentGroupId } = useContext(GroupContext);
 
   const todayTasks = tasks?.filter(
     (task) => task.dueDate && isToday(new Date(task.dueDate)) && !task.completed
@@ -69,14 +72,14 @@ const TasksListPage: NextPage = () => {
   const allUncompletedTasks = tasks?.filter((task) => !task.completed);
   const allCompletedTasks = tasks?.filter((task) => task.completed);
   const Tabs = [
-    { title: "Today's task", content: <TaskList tasks={todayTasks} /> },
+    { title: "Today's task", content: <TasksList tasks={todayTasks} /> },
     {
       title: "Uncompleted tasks",
-      content: <TaskList tasks={allUncompletedTasks} />,
+      content: <TasksList tasks={allUncompletedTasks} />,
     },
     {
       title: "Completed tasks",
-      content: <TaskList tasks={allCompletedTasks} />,
+      content: <TasksList tasks={allCompletedTasks} />,
     },
   ];
   const { CurrentTab, tabs } = useTabs(Tabs);
@@ -85,9 +88,12 @@ const TasksListPage: NextPage = () => {
     const fetchTasks = async () => {
       setIsLoading(true);
 
-      const response = await fetch(API_ROUTE_TASKS, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${ENDPOINTS.tasks}?groupId=${currentGroupId}`,
+        {
+          method: "GET",
+        }
+      );
       const responseJSON: APIResponseType = await response.json();
 
       if (responseJSON.success) {
@@ -102,16 +108,29 @@ const TasksListPage: NextPage = () => {
       return;
     };
 
-    fetchTasks();
+    if (currentGroupId) {
+      fetchTasks();
+    }
     return;
-  }, [t]);
+  }, [t, currentGroupId]);
 
   return (
     <>
-      <Layout>
-        <TabsContainer>{tabs.map((tab) => tab)}</TabsContainer>
-        {isLoading ? <Spinner /> : <CurrentTab />}
-      </Layout>
+      <TabsContainer>{tabs.map((tab) => tab)}</TabsContainer>
+      {isLoading ? <Spinner /> : <CurrentTab />}
+    </>
+  );
+};
+
+const TasksListPage: NextPage = () => {
+  const { t } = useLocale();
+
+  return (
+    <>
+      <LayoutAuth>
+        <h2>{t.tasks.tasksList}</h2>
+        <TasksListPanel />
+      </LayoutAuth>
     </>
   );
 };
