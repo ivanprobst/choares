@@ -14,10 +14,12 @@ model Task {
   id           String     @default(uuid()) @id
   createdAt    DateTime   @default(now()) @map(name: "created_at")
   updatedAt    DateTime   @updatedAt @map(name: "updated_at")
-  creator      User       @relation(fields: [creatorId], references: [id])
+  creator      User       @relation("CreatedTasks", fields: [creatorId], references: [id])
   creatorId    String
   group        Group      @relation(fields: [groupId], references: [id])
   groupId      String
+  assignee     User?      @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  assigneeId   String?
   name         String
   description  String?
   dueDate      DateTime?  @map(name: "due_date")
@@ -79,7 +81,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  tasksCreated  Task[]
+  tasksCreated  Task[]    @relation("CreatedTasks")
+  tasksAssigned Task[]    @relation("AssignedTasks")
   groupsCreated Group[]
   groupsMember  GroupMembers[]
 

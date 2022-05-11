@@ -20,7 +20,6 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
   const router = useRouter();
 
   const openTaskHandler = () => {
-    console.log("open task");
     router.push(`${ROUTES.task}/${task.id}`);
   };
 
@@ -32,6 +31,11 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
     >
       <div>
         <h3 className={styles.tasksListName}>{task.name}</h3>
+        <p>
+          {task.assigneeId
+            ? `Assigned to ${task.assigneeId}`
+            : "No one assigned"}
+        </p>
         <p className={styles.tasksListDueDate}>
           {`${t.tasks.dueBy}: ${
             task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
@@ -101,7 +105,7 @@ const TasksListPanel = () => {
       } else {
         setTasks(undefined);
         toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.log("error_type: ", responseJSON.error_type);
+        console.error("error_type: ", responseJSON.error_type);
       }
 
       setIsLoading(false);

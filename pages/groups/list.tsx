@@ -64,7 +64,7 @@ const Groups: NextPage = () => {
       } else {
         setGroups(undefined);
         toast.error(`${t.groups.errorLoadGroups} (${responseJSON.error_type})`);
-        console.log("error_type: ", responseJSON.error_type);
+        console.error("error_type: ", responseJSON.error_type);
       }
 
       setIsLoading(false);

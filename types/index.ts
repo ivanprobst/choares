@@ -16,6 +16,7 @@ interface DBBaseType {
 
 export interface TaskDataType {
   groupId: string;
+  assigneeId?: string;
   name: string;
   description?: string;
   dueDate?: string;

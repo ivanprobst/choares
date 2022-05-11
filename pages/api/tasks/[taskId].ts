@@ -63,7 +63,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
       where: { id: taskId as string },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {
@@ -99,7 +99,7 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
       data: taskData,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {
@@ -120,7 +120,7 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
       where: { id: taskId as string },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {

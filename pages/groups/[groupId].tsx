@@ -53,7 +53,7 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
       setCurrentGroup(responseJSON.data); // TODO: fix, we lose the members in the returned group data
     } else {
       toast.error(`${t.groups.errorAddMember} (${responseJSON.error_type})`);
-      console.log("error_type: ", responseJSON.error_type);
+      console.error("error_type: ", responseJSON.error_type);
     }
 
     setIsLoading(false);
