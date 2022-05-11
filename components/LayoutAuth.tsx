@@ -25,6 +25,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
 
   const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
 
+  // TODO: save to state
   useEffect(() => {
     const initCurrentGroupdId = async () => {
       const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
@@ -34,13 +35,19 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
         });
         const responseJSON: APIResponseType = await response.json();
 
-        if (responseJSON.success) {
-          localStorage.setItem(LOCAL_STORAGE.groupId, responseJSON.data[0].id);
-        } else {
+        if (!responseJSON.success) {
           toast.error(
             `${t.groups.errorLoadGroups} (${responseJSON.error_type})`
-          ); // TODO: entire system fails in this case, bring to error page
+          );
           console.log("error_type: ", responseJSON.error_type);
+          return;
+        }
+
+        if (responseJSON.data[0]) {
+          localStorage.setItem(LOCAL_STORAGE.groupId, responseJSON.data[0].id);
+        } else {
+          // TODO: entire system fails in this case, bring to error page
+          toast.error(`${t.groups.errorNoGroup}`);
         }
       }
       setCurrentGroupId(localStorage.getItem(LOCAL_STORAGE.groupId));
