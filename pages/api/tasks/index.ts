@@ -45,13 +45,17 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, error_type: "data_format_incorrect" });
   }
 
-  const { name, description, dueDate } = taskData;
+  const { name, description, dueDate, assigneeId, groupId } = taskData;
+  const assignee = assigneeId
+    ? { assignee: { connect: { id: taskData.assigneeId } } }
+    : {};
   const computedTaskData = {
     name,
     description,
     dueDate,
     creator: { connect: { id: session?.user?.id } },
-    group: { connect: { id: taskData.groupId } },
+    group: { connect: { id: groupId } },
+    ...assignee,
   };
 
   let task = undefined;
@@ -88,7 +92,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     tasks = await prisma.task.findMany(getWhere);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!tasks) {

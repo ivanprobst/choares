@@ -33,12 +33,6 @@ export default async function handler(
       .json({ success: false, error_type: "task_not_found" });
   }
 
-  if (taskToUpdate.creatorId !== session.user.id) {
-    return res
-      .status(403)
-      .json({ success: false, error_type: "user_missing_rights" });
-  }
-
   if (req.method === "GET") {
     await handleGet(req, res);
   } else if (req.method === "PUT") {
@@ -63,7 +57,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
       where: { id: taskId as string },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {
@@ -79,6 +73,13 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   console.info("body: ", req.body);
   const { taskId } = req.query;
   const taskData = req.body;
+
+  // TODO: prevent non-creator to update the task
+  // if (taskToUpdate.creatorId !== session.user.id) {
+  //   return res
+  //     .status(403)
+  //     .json({ success: false, error_type: "user_missing_rights" });
+  // }
 
   if (!taskData) {
     return res
@@ -99,7 +100,7 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
       data: taskData,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {
@@ -114,13 +115,20 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
 
+  // TODO: prevent non-creator to delete the task
+  // if (taskToUpdate.creatorId !== session.user.id) {
+  //   return res
+  //     .status(403)
+  //     .json({ success: false, error_type: "user_missing_rights" });
+  // }
+
   let task = undefined;
   try {
     task = await prisma.task.delete({
       where: { id: taskId as string },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!task) {

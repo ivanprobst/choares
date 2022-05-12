@@ -41,7 +41,7 @@ const GroupCreate: NextPage = () => {
       router.push(ROUTES.groups);
     } else {
       toast.error(`${t.groups.errorCreateGroup} (${responseJSON.error_type})`);
-      console.log("error_type: ", responseJSON.error_type);
+      console.error("error_type: ", responseJSON.error_type);
     }
 
     return;

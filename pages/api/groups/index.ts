@@ -88,14 +88,15 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, error_type: "session_invalid" });
   }
 
+  // TODO: make more generic? here we always pull list of groups we are member of
   let groups = undefined;
   try {
     groups = await prisma.group.findMany({
-      where: { creator: { id: session.user.id } },
+      where: { members: { some: { userId: session.user.id } } },
       include: { members: { include: { user: true } } },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!groups) {

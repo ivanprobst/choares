@@ -62,7 +62,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
       include: { members: { include: { user: true } } },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!group) {
@@ -87,7 +87,7 @@ const handlerMemberPost = async (req: NextApiRequest, res: NextApiResponse) => {
       where: { email: memberData.userEmail },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!user) {
@@ -116,7 +116,7 @@ const handlerMemberPost = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (!group) {

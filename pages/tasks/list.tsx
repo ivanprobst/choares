@@ -7,20 +7,24 @@ import { format, isToday } from "date-fns";
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../types";
+import {
+  APIResponseType,
+  TaskDBType,
+  TaskFilterWhenType,
+  TaskFilterWhoType,
+} from "../../types";
 import Spinner from "../../components/Spinner";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
-import useTabs from "../../hooks/useTabs";
-import { TabsContainer } from "../../components/Tab";
+import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import GroupContext from "../../state/GroupContext";
+import { useSession } from "next-auth/react";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
   const router = useRouter();
 
   const openTaskHandler = () => {
-    console.log("open task");
     router.push(`${ROUTES.task}/${task.id}`);
   };
 
@@ -32,6 +36,11 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
     >
       <div>
         <h3 className={styles.tasksListName}>{task.name}</h3>
+        <p>
+          {task.assigneeId
+            ? `Assigned to ${task.assigneeId.slice(-4)}`
+            : "No one assigned"}
+        </p>
         <p className={styles.tasksListDueDate}>
           {`${t.tasks.dueBy}: ${
             task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
@@ -61,28 +70,38 @@ const TasksList = ({ tasks }: { tasks: Array<TaskDBType> | undefined }) => {
 
 const TasksListPanel = () => {
   const { t } = useLocale();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [tasks, setTasks] = useState<Array<TaskDBType> | undefined>(undefined);
-
   const { currentGroupId } = useContext(GroupContext);
+  const { data: session } = useSession();
 
-  const todayTasks = tasks?.filter(
-    (task) => task.dueDate && isToday(new Date(task.dueDate)) && !task.completed
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tasks, setTasks] = useState<Array<TaskDBType>>([]);
+  const [taskFilterWhen, setTaskFilterWhen] = useState<TaskFilterWhenType>(
+    TaskFilterWhenType.today
   );
-  const allUncompletedTasks = tasks?.filter((task) => !task.completed);
-  const allCompletedTasks = tasks?.filter((task) => task.completed);
-  const Tabs = [
-    { title: "Today's task", content: <TasksList tasks={todayTasks} /> },
-    {
-      title: "Uncompleted tasks",
-      content: <TasksList tasks={allUncompletedTasks} />,
-    },
-    {
-      title: "Completed tasks",
-      content: <TasksList tasks={allCompletedTasks} />,
-    },
-  ];
-  const { CurrentTab, tabs } = useTabs(Tabs);
+  const [taskFilterWho, setTaskFilterWho] = useState<TaskFilterWhoType>(
+    TaskFilterWhoType.me
+  );
+  const [taskFilterIsCompleted, setTaskFilterIsCompleted] =
+    useState<boolean>(false);
+
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (taskFilterWhen === TaskFilterWhenType.today) {
+        return task.dueDate && isToday(new Date(task.dueDate));
+      } else if (taskFilterWhen === TaskFilterWhenType.noDate) {
+        return task.dueDate === null;
+      }
+      return true;
+    })
+    .filter((task) => {
+      if (taskFilterWho === TaskFilterWhoType.me) {
+        return task.assigneeId === session?.user.id;
+      }
+      return true;
+    })
+    .filter((task) => {
+      return taskFilterIsCompleted ? task.completed : !task.completed;
+    });
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -99,9 +118,9 @@ const TasksListPanel = () => {
       if (responseJSON.success) {
         setTasks(responseJSON.data);
       } else {
-        setTasks(undefined);
+        setTasks([]);
         toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.log("error_type: ", responseJSON.error_type);
+        console.error("error_type: ", responseJSON.error_type);
       }
 
       setIsLoading(false);
@@ -116,8 +135,57 @@ const TasksListPanel = () => {
 
   return (
     <>
-      <TabsContainer>{tabs.map((tab) => tab)}</TabsContainer>
-      {isLoading ? <Spinner /> : <CurrentTab />}
+      <div className={styles.tabsContainerGroup}>
+        <TabsContainer>
+          <Tab
+            onClick={() => setTaskFilterWhen(TaskFilterWhenType.today)}
+            current={taskFilterWhen === TaskFilterWhenType.today}
+          >
+            Today
+          </Tab>
+          <Tab
+            onClick={() => setTaskFilterWhen(TaskFilterWhenType.noDate)}
+            current={taskFilterWhen === TaskFilterWhenType.noDate}
+          >
+            Not planned
+          </Tab>
+          <Tab
+            onClick={() => setTaskFilterWhen(TaskFilterWhenType.all)}
+            current={taskFilterWhen === TaskFilterWhenType.all}
+          >
+            All
+          </Tab>
+        </TabsContainer>
+        <TabsContainer>
+          <Tab
+            onClick={() => setTaskFilterIsCompleted(false)}
+            current={!taskFilterIsCompleted}
+          >
+            To do
+          </Tab>
+          <Tab
+            onClick={() => setTaskFilterIsCompleted(true)}
+            current={taskFilterIsCompleted}
+          >
+            Completed
+          </Tab>
+        </TabsContainer>
+      </div>
+      <TabsContainer>
+        <Tab
+          onClick={() => setTaskFilterWho(TaskFilterWhoType.me)}
+          current={taskFilterWho === TaskFilterWhoType.me}
+        >
+          Me
+        </Tab>
+        <Tab
+          onClick={() => setTaskFilterWho(TaskFilterWhoType.everyone)}
+          current={taskFilterWho === TaskFilterWhoType.everyone}
+        >
+          Everybody
+        </Tab>
+      </TabsContainer>
+      {isLoading ? <Spinner /> : <TasksList tasks={filteredTasks} />}
     </>
   );
 };
@@ -128,7 +196,6 @@ const TasksListPage: NextPage = () => {
   return (
     <>
       <LayoutAuth>
-        <h2>{t.tasks.tasksList}</h2>
         <TasksListPanel />
       </LayoutAuth>
     </>

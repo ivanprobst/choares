@@ -13,10 +13,12 @@ import { Tab, TabsContainer } from "../../components/Tab";
 import { addDays, format } from "date-fns";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
+import { useSession } from "next-auth/react";
 
 const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentTask, setCurrentTask] = useState<TaskDBType>(task);
@@ -44,6 +46,32 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       setCurrentTask(responseJSON.data);
     } else {
       toast.error(`${t.tasks.errorCompleteTask} (${responseJSON.error_type})`);
+      console.error("error_type: ", responseJSON.error_type);
+    }
+
+    setIsLoading(false);
+  };
+
+  const assignTaskHandler = async () => {
+    setIsLoading(true);
+
+    const updatedStatus = { assignee: { connect: { id: session?.user.id } } };
+
+    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedStatus),
+    });
+    const responseJSON: APIResponseType = await response.json();
+
+    if (responseJSON.success) {
+      toast.success(t.tasks.successAssignTask);
+      setCurrentTask(responseJSON.data); // TODO: fix refresh, as assignee is not included
+    } else {
+      toast.error(`${t.tasks.errorAssignTask} (${responseJSON.error_type})`);
       console.error("error_type: ", responseJSON.error_type);
     }
 
@@ -105,6 +133,11 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
         <h2>{currentTask.name}</h2>
         {currentTask.description && <p>{currentTask.description}</p>}
         <p>
+          {task.assigneeId
+            ? `Assigned to ${task.assigneeId.slice(-4)}`
+            : "No one assigned"}
+        </p>
+        <p>
           {`${t.tasks.dueBy}: ${
             currentTask.dueDate
               ? format(new Date(currentTask.dueDate), "MMM d, y")
@@ -118,6 +151,15 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
           {currentTask.completed
             ? t.tasks.uncompleteTask
             : t.tasks.completeTask}
+        </Button>
+
+        <Button
+          onClick={assignTaskHandler}
+          type="blue"
+          isLoading={isLoading}
+          disabled={task.assigneeId === session?.user.id}
+        >
+          {t.tasks.assignToMe}
         </Button>
 
         <Button
@@ -178,11 +220,6 @@ const Task: NextPage = () => {
 
   return (
     <LayoutAuth>
-      <TabsContainer>
-        <Tab onClick={moveToListHandler} current={true}>
-          {t.tasks.backTasksList}
-        </Tab>
-      </TabsContainer>
       {isLoading ? (
         <Spinner />
       ) : task ? (

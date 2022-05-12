@@ -25,6 +25,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
 
   const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
 
+  // TODO: save to state
   useEffect(() => {
     const initCurrentGroupdId = async () => {
       const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
@@ -34,13 +35,19 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
         });
         const responseJSON: APIResponseType = await response.json();
 
-        if (responseJSON.success) {
-          localStorage.setItem(LOCAL_STORAGE.groupId, responseJSON.data[0].id);
-        } else {
+        if (!responseJSON.success) {
           toast.error(
             `${t.groups.errorLoadGroups} (${responseJSON.error_type})`
-          ); // TODO: entire system fails in this case, bring to error page
-          console.log("error_type: ", responseJSON.error_type);
+          );
+          console.error("error_type: ", responseJSON.error_type);
+          return;
+        }
+
+        if (responseJSON.data[0]) {
+          localStorage.setItem(LOCAL_STORAGE.groupId, responseJSON.data[0].id);
+        } else {
+          // TODO: entire system fails in this case, bring to error page
+          toast.error(`${t.groups.errorNoGroup}`);
         }
       }
       setCurrentGroupId(localStorage.getItem(LOCAL_STORAGE.groupId));
@@ -68,9 +75,10 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           <h1 className={styles.title}>
             <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
           </h1>
-          <div>
+          <nav className={styles.nav}>
+            <Link href={ROUTES.tasksList}>{t.tasks.tasksList}</Link>
             <Link href={ROUTES.tasksCreate}>{t.tasks.createTaskMenu}</Link>
-          </div>
+          </nav>
         </header>
 
         <main className={styles.main}>{children}</main>
@@ -80,7 +88,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           <nav className={styles.nav}>
             <div>
               <Link href={ROUTES.groups}>{t.groups.title}</Link>
-              {` (${t.common.current}: ${currentGroupId?.slice(0, 4)})`}
+              {` (${t.common.current}: ${currentGroupId?.slice(-4)})`}
             </div>
             <a
               href="#"

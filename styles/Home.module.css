@@ -9,7 +9,7 @@
   background: var(--color-gray-dark);
 }
 
-.header  {
+.header {
   display: flex;
   align-items: center;
   width: 100%;
@@ -178,10 +178,16 @@
   margin-bottom: 1rem;
 }
 
+.tabsContainerGroup {
+  display: flex;
+}
 .tabsContainer {
   display: flex;
   margin-bottom: 1rem;
 }
+  .tabsContainer:first-child {
+    flex: 1;
+  }
 .tab {
   padding: 0 0.5rem;
   border: none;
