@@ -87,7 +87,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           <nav className={styles.nav}>
             <div>
               <Link href={ROUTES.groups}>{t.groups.title}</Link>
-              {` (${t.common.current}: ${currentGroupId?.slice(0, 4)})`}
+              {` (${t.common.current}: ${currentGroupId?.slice(-4)})`}
             </div>
             <a
               href="#"

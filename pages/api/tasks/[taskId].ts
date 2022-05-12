@@ -33,12 +33,6 @@ export default async function handler(
       .json({ success: false, error_type: "task_not_found" });
   }
 
-  if (taskToUpdate.creatorId !== session.user.id) {
-    return res
-      .status(403)
-      .json({ success: false, error_type: "user_missing_rights" });
-  }
-
   if (req.method === "GET") {
     await handleGet(req, res);
   } else if (req.method === "PUT") {
@@ -80,6 +74,13 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
   const taskData = req.body;
 
+  // TODO: prevent non-creator to update the task
+  // if (taskToUpdate.creatorId !== session.user.id) {
+  //   return res
+  //     .status(403)
+  //     .json({ success: false, error_type: "user_missing_rights" });
+  // }
+
   if (!taskData) {
     return res
       .status(400)
@@ -113,6 +114,13 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
+
+  // TODO: prevent non-creator to delete the task
+  // if (taskToUpdate.creatorId !== session.user.id) {
+  //   return res
+  //     .status(403)
+  //     .json({ success: false, error_type: "user_missing_rights" });
+  // }
 
   let task = undefined;
   try {

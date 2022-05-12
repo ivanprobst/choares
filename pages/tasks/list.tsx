@@ -33,7 +33,7 @@ const TaskItem = ({ task }: { task: TaskDBType }) => {
         <h3 className={styles.tasksListName}>{task.name}</h3>
         <p>
           {task.assigneeId
-            ? `Assigned to ${task.assigneeId}`
+            ? `Assigned to ${task.assigneeId.slice(-4)}`
             : "No one assigned"}
         </p>
         <p className={styles.tasksListDueDate}>
