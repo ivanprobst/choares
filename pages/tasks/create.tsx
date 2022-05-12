@@ -146,7 +146,7 @@ const TaskCreationForm = () => {
           className={styles.input}
           disabled={isLoading}
         >
-          <option value="">No one</option>
+          <option value="">{t.tasks.noAssignee}</option>
           {groupUsers.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name}
@@ -167,7 +167,6 @@ const CreateTaskPage: NextPage = () => {
 
   return (
     <LayoutAuth>
-      <h2>{t.tasks.createTaskTitle}</h2>
       <TaskCreationForm />
     </LayoutAuth>
   );

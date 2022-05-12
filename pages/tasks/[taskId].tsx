@@ -220,11 +220,6 @@ const Task: NextPage = () => {
 
   return (
     <LayoutAuth>
-      <TabsContainer>
-        <Tab onClick={moveToListHandler} current={true}>
-          {t.tasks.backTasksList}
-        </Tab>
-      </TabsContainer>
       {isLoading ? (
         <Spinner />
       ) : task ? (

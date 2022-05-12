@@ -14,12 +14,22 @@ interface DBBaseType {
   updatedAt: Date;
 }
 
+export enum TaskFilterWhenType {
+  today = "today",
+  all = "all",
+  noDate = "noDate",
+}
+export enum TaskFilterWhoType {
+  me = "me",
+  everyone = "everyone",
+}
+
 export interface TaskDataType {
   groupId: string;
   assigneeId?: string;
   name: string;
   description?: string;
-  dueDate?: string;
+  dueDate: string | null;
   completed: boolean;
   completedAt?: Date;
 }

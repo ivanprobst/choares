@@ -29,6 +29,7 @@ export const en = {
     dueBy: "Due by",
     taskCompleted: "Completed",
     assignToMe: "Assign to me",
+    noAssignee: "No one yet",
     backTasksList: "Go back to tasks list",
     completeTask: "Complete",
     uncompleteTask: "Uncomplete",

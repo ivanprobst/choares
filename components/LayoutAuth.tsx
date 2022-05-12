@@ -75,9 +75,10 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           <h1 className={styles.title}>
             <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
           </h1>
-          <div>
+          <nav className={styles.nav}>
+            <Link href={ROUTES.tasksList}>{t.tasks.tasksList}</Link>
             <Link href={ROUTES.tasksCreate}>{t.tasks.createTaskMenu}</Link>
-          </div>
+          </nav>
         </header>
 
         <main className={styles.main}>{children}</main>
