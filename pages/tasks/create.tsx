@@ -7,7 +7,7 @@ import { format, addDays } from "date-fns";
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, UserDBType } from "../../types";
+import { APIResponseType, RecurringType, UserDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 import GroupContext from "../../state/GroupContext";
@@ -23,6 +23,7 @@ const TaskCreationForm = () => {
     format(addDays(new Date(), 1), "yyyy-MM-dd")
   );
   const [assigneeId, setAssigneeId] = useState("");
+  const [recurring, setRecurring] = useState<RecurringType | "">("");
 
   const { currentGroupId } = useContext(GroupContext);
   const [groupUsers, setGroupUsers] = useState<Array<UserDBType>>([]);
@@ -66,6 +67,7 @@ const TaskCreationForm = () => {
       name: name || null,
       description: description || null,
       dueDate: new Date(dueDate) || null,
+      recurring: recurring || null,
       assigneeId: assigneeId || null,
     };
 
@@ -134,6 +136,29 @@ const TaskCreationForm = () => {
           placeholder={t.tasks.taskLabelDueDate}
         />
       </div>
+
+      {dueDate && (
+        <div className={styles.formBlock}>
+          <label className={styles.label} htmlFor="task-recurring">
+            Repeat the task
+          </label>
+          <select
+            id="task-recurring"
+            value={recurring}
+            onChange={(e) => setRecurring(e.target.value as RecurringType)}
+            className={styles.input}
+            disabled={isLoading}
+          >
+            <option value="">No</option>
+            <option value="weekly">
+              Every week on {format(new Date(dueDate), "EEEE")}
+            </option>
+            <option value="monthly">
+              Every month on the {format(new Date(dueDate), "do")}
+            </option>
+          </select>
+        </div>
+      )}
 
       <div className={styles.formBlock}>
         <label className={styles.label} htmlFor="task-assignee">
