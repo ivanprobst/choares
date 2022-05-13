@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
+import { v4 as uuidv4 } from "uuid";
 
 import prisma from "../../../utils/prisma";
 import { isTaskDataType } from "../../../types";
+import { GENERIC } from "../../../utils/constants";
+import { addMonths, addWeeks, parseISO } from "date-fns";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,8 +31,41 @@ export default async function handler(
   return;
 }
 
+const createRecurringTasks = async (computedTask: any) => {
+  const recurringId = uuidv4();
+  const numberOfTasks = Math.round(
+    GENERIC.recurringTimeframe / (computedTask.recurring === "weekly" ? 7 : 30)
+  );
+
+  const tasks = [];
+  for (let taskCount = 0; taskCount < numberOfTasks; taskCount++) {
+    let currentDueDate;
+    if (computedTask.recurring === "weekly") {
+      currentDueDate = addWeeks(parseISO(computedTask.dueDate), taskCount);
+    } else {
+      currentDueDate = addMonths(parseISO(computedTask.dueDate), taskCount);
+    }
+
+    tasks.push({
+      ...computedTask,
+      dueDate: currentDueDate,
+      recurringId,
+    });
+  }
+
+  const tasksCreated = await Promise.all(
+    tasks.map((task) =>
+      prisma.task.create({
+        data: task,
+      })
+    )
+  );
+
+  return tasksCreated;
+};
+
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.info("body: ", req.body);
+  console.info("POST task: ", req.body);
   const taskData = req.body;
   const session = await getSession({ req });
 
@@ -45,7 +81,8 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, error_type: "data_format_incorrect" });
   }
 
-  const { name, description, dueDate, assigneeId, groupId } = taskData;
+  const { name, description, dueDate, recurring, assigneeId, groupId } =
+    taskData;
   const assignee = assigneeId
     ? { assignee: { connect: { id: taskData.assigneeId } } }
     : {};
@@ -53,6 +90,7 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
     name,
     description,
     dueDate,
+    recurring,
     creator: { connect: { id: session?.user?.id } },
     group: { connect: { id: groupId } },
     ...assignee,
@@ -60,9 +98,13 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
 
   let task = undefined;
   try {
-    task = await prisma.task.create({
-      data: computedTaskData,
-    });
+    if (recurring) {
+      task = await createRecurringTasks(computedTaskData);
+    } else {
+      task = await prisma.task.create({
+        data: computedTaskData,
+      });
+    }
   } catch (e) {
     console.error(e);
   }

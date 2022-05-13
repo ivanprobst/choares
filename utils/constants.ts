@@ -1,3 +1,7 @@
+export const GENERIC = {
+  recurringTimeframe: 365,
+};
+
 export const ENDPOINTS = {
   tasks: "/api/tasks",
   groups: "/api/groups",

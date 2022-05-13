@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import { format, isToday } from "date-fns";
+import { format, getTime, isToday } from "date-fns";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
@@ -116,7 +116,12 @@ const TasksListPanel = () => {
       const responseJSON: APIResponseType = await response.json();
 
       if (responseJSON.success) {
-        setTasks(responseJSON.data);
+        const sortedTasks = responseJSON.data.sort(
+          (a: TaskDBType, b: TaskDBType) =>
+            getTime(new Date(a.dueDate ?? 0)) -
+            getTime(new Date(b.dueDate ?? 0))
+        );
+        setTasks(sortedTasks);
       } else {
         setTasks([]);
         toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
