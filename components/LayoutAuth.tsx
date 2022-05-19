@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, ReactNode } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -9,10 +9,42 @@ import useLocale from "../state/useLocale";
 import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useRouter } from "next/router";
-import GroupContext from "../state/GroupContext";
 import { APIResponseType } from "../types";
 import toast from "react-hot-toast";
 import { userSessionAtom } from "../state/users";
+import { groupSessionAtom } from "../state/groups";
+
+const getCurrentGroup = async () => {
+  const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
+
+  if (currentGroupId) {
+    const response = await fetch(`${ENDPOINTS.groups}/${currentGroupId}`, {
+      method: "GET",
+    });
+    const responseJSON: APIResponseType = await response.json();
+
+    if (!responseJSON.success) {
+      return { success: false, error_type: responseJSON.error_type };
+    }
+
+    return { success: true, group: responseJSON.data };
+  } else {
+    const response = await fetch(ENDPOINTS.groups, {
+      method: "GET",
+    });
+    const responseJSON: APIResponseType = await response.json();
+
+    if (!responseJSON.success) {
+      return { success: false, error_type: responseJSON.error_type };
+    }
+
+    if (responseJSON.data.length === 0) {
+      return { success: false, error_type: "no_group_found" };
+    }
+
+    return { success: true, group: responseJSON.data[0] };
+  }
+};
 
 const LayoutAuth = ({ children }: { children: ReactNode }) => {
   const { t } = useLocale();
@@ -25,8 +57,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
-
   const [, setUserSession] = useAtom(userSessionAtom);
   useEffect(() => {
     if (session?.user) {
@@ -38,32 +68,23 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     }
   }, [session?.user]);
 
-  // TODO: save to state
+  const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
   useEffect(() => {
     const initCurrentGroupdId = async () => {
-      const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
-      if (!currentGroupId) {
-        const response = await fetch(ENDPOINTS.groups, {
-          method: "GET",
-        });
-        const responseJSON: APIResponseType = await response.json();
+      const { success, error_type, group } = await getCurrentGroup();
 
-        if (!responseJSON.success) {
-          toast.error(
-            `${t.groups.errorLoadGroups} (${responseJSON.error_type})`
-          );
-          console.error("error_type: ", responseJSON.error_type);
-          return;
-        }
-
-        if (responseJSON.data[0]) {
-          localStorage.setItem(LOCAL_STORAGE.groupId, responseJSON.data[0].id);
-        } else {
-          // TODO: entire system fails in this case, bring to error page
-          toast.error(`${t.groups.errorNoGroup}`);
-        }
+      if (!success) {
+        // TODO: entire system fails in this case, bring to error page
+        toast.error(`${t.groups.errorNoGroup} (${error_type})`);
+        console.error(`error_type: ${error_type}`);
+        return;
       }
-      setCurrentGroupId(localStorage.getItem(LOCAL_STORAGE.groupId));
+
+      localStorage.setItem(LOCAL_STORAGE.groupId, group.id);
+      setGroupSession({
+        id: group.id,
+        name: group.name,
+      });
     };
 
     initCurrentGroupdId();
@@ -74,7 +95,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <GroupContext.Provider value={{ currentGroupId, setCurrentGroupId }}>
+    <>
       <div className={styles.container}>
         <Head>
           <title>
@@ -101,7 +122,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           <nav className={styles.nav}>
             <div>
               <Link href={ROUTES.groups}>{t.groups.title}</Link>
-              {` (${t.common.current}: ${currentGroupId?.slice(-4)})`}
+              {` (${t.common.current}: ${groupSession?.name})`}
             </div>
             <a
               href="#"
@@ -115,7 +136,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
           </nav>
         </footer>
       </div>
-    </GroupContext.Provider>
+    </>
   );
 };
 

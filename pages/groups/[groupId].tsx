@@ -1,18 +1,19 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
 import { APIResponseType, GroupDBType } from "../../types";
-import { ENDPOINTS, ROUTES } from "../../utils/constants";
+import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
-import GroupContext from "../../state/GroupContext";
+import { groupSessionAtom } from "../../state/groups";
 
 const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const { t } = useLocale();
@@ -21,12 +22,12 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
   const [currentGroup, setCurrentGroup] = useState<GroupDBType>(group);
   const [userEmail, setUserEmail] = useState<string>("");
 
-  const { currentGroupId, setCurrentGroupId } = useContext(GroupContext);
-  const isCurrentGroup = currentGroupId === group.id;
+  const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
+  const isCurrentGroup = groupSession?.id === group.id;
 
   const setAsCurrentGroup = async () => {
-    setCurrentGroupId && setCurrentGroupId(currentGroup.id);
-    localStorage.setItem("groupId", currentGroup.id);
+    setGroupSession({ id: currentGroup.id, name: currentGroup.name });
+    localStorage.setItem(LOCAL_STORAGE.groupId, currentGroup.id);
     toast.success(`${t.groups.successGroupSwitch}${currentGroup.name}`);
   };
 

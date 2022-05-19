@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -18,8 +18,8 @@ import Spinner from "../../components/Spinner";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
-import GroupContext from "../../state/GroupContext";
 import { userSessionAtom } from "../../state/users";
+import { groupSessionAtom } from "../../state/groups";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
@@ -71,8 +71,8 @@ const TasksList = ({ tasks }: { tasks: Array<TaskDBType> | undefined }) => {
 
 const TasksListPanel = () => {
   const { t } = useLocale();
-  const { currentGroupId } = useContext(GroupContext);
 
+  const [groupSession] = useAtom(groupSessionAtom);
   const [userSession] = useAtom(userSessionAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -110,7 +110,7 @@ const TasksListPanel = () => {
       setIsLoading(true);
 
       const response = await fetch(
-        `${ENDPOINTS.tasks}?groupId=${currentGroupId}`,
+        `${ENDPOINTS.tasks}?groupId=${groupSession?.id}`,
         {
           method: "GET",
         }
@@ -134,11 +134,11 @@ const TasksListPanel = () => {
       return;
     };
 
-    if (currentGroupId) {
+    if (groupSession?.id) {
       fetchTasks();
     }
     return;
-  }, [t, currentGroupId]);
+  }, [t, groupSession]);
 
   return (
     <>

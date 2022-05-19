@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, addDays } from "date-fns";
+import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
@@ -10,7 +11,7 @@ import useLocale from "../../state/useLocale";
 import { APIResponseType, RecurringType, UserDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
-import GroupContext from "../../state/GroupContext";
+import { groupSessionAtom } from "../../state/groups";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();
@@ -25,17 +26,17 @@ const TaskCreationForm = () => {
   const [assigneeId, setAssigneeId] = useState("");
   const [recurring, setRecurring] = useState<RecurringType | "">("");
 
-  const { currentGroupId } = useContext(GroupContext);
+  const [groupSession] = useAtom(groupSessionAtom);
   const [groupUsers, setGroupUsers] = useState<Array<UserDBType>>([]);
 
-  const taskCreationDisabled = name === "" || !currentGroupId;
+  const taskCreationDisabled = name === "" || !groupSession?.id;
 
   // TODO: replace with state
   useEffect(() => {
     const fetchGroup = async () => {
       setIsLoading(true);
 
-      const response = await fetch(`${ENDPOINTS.groups}/${currentGroupId}`, {
+      const response = await fetch(`${ENDPOINTS.groups}/${groupSession?.id}`, {
         method: "GET",
       });
       const responseJSON: APIResponseType = await response.json();
@@ -55,15 +56,15 @@ const TaskCreationForm = () => {
       return;
     };
 
-    if (currentGroupId) {
+    if (groupSession?.id) {
       fetchGroup();
     }
     return;
-  }, [t, currentGroupId]);
+  }, [t, groupSession]);
 
   const createTaskHandler = async () => {
     const taskData = {
-      groupId: currentGroupId,
+      groupId: groupSession?.id,
       name: name || null,
       description: description || null,
       dueDate: new Date(dueDate) || null,
