@@ -23,6 +23,10 @@ export enum TaskFilterWhoType {
   me = "me",
   everyone = "everyone",
 }
+export enum RecurringType {
+  weekly = "weekly",
+  monthly = "monthly",
+}
 
 export interface TaskDataType {
   groupId: string;
@@ -30,6 +34,7 @@ export interface TaskDataType {
   name: string;
   description?: string;
   dueDate: string | null;
+  recurring: RecurringType | null;
   completed: boolean;
   completedAt?: Date;
 }

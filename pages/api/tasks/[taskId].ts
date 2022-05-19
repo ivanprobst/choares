@@ -70,7 +70,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.info("body: ", req.body);
+  console.info("PUT task: ", req.body);
   const { taskId } = req.query;
   const taskData = req.body;
 
@@ -112,6 +112,14 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ success: true, data: task });
 };
 
+const deleteRecurringTasks = async (recurringId: string) => {
+  const tasksDeleted = await prisma.task.deleteMany({
+    where: { recurringId: recurringId },
+  });
+
+  return tasksDeleted;
+};
+
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
   const { taskId } = req.query;
 
@@ -122,11 +130,19 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
   //     .json({ success: false, error_type: "user_missing_rights" });
   // }
 
+  const taskToDelete = await prisma.task.findUnique({
+    where: { id: taskId as string },
+  });
+
   let task = undefined;
   try {
-    task = await prisma.task.delete({
-      where: { id: taskId as string },
-    });
+    if (taskToDelete?.recurringId) {
+      task = deleteRecurringTasks(taskToDelete.recurringId);
+    } else {
+      task = await prisma.task.delete({
+        where: { id: taskId as string },
+      });
+    }
   } catch (e) {
     console.error(e);
   }
