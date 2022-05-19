@@ -2,6 +2,7 @@ import { useEffect, useState, ReactNode } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { useAtom } from "jotai";
 
 import styles from "../styles/Home.module.css";
 import useLocale from "../state/useLocale";
@@ -11,12 +12,13 @@ import { useRouter } from "next/router";
 import GroupContext from "../state/GroupContext";
 import { APIResponseType } from "../types";
 import toast from "react-hot-toast";
+import { userSessionAtom } from "../state/users";
 
 const LayoutAuth = ({ children }: { children: ReactNode }) => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const { status } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
       router.push(ROUTES.signin);
@@ -24,6 +26,17 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
   });
 
   const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
+
+  const [, setUserSession] = useAtom(userSessionAtom);
+  useEffect(() => {
+    if (session?.user) {
+      setUserSession({
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+      });
+    }
+  }, [session?.user]);
 
   // TODO: save to state
   useEffect(() => {

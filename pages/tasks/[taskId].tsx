@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
@@ -9,16 +10,16 @@ import useLocale from "../../state/useLocale";
 import { APIResponseType, TaskDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
-import { Tab, TabsContainer } from "../../components/Tab";
 import { addDays, format } from "date-fns";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
-import { useSession } from "next-auth/react";
+import { userSessionAtom } from "../../state/users";
 
 const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
+
+  const [userSession] = useAtom(userSessionAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentTask, setCurrentTask] = useState<TaskDBType>(task);
@@ -55,7 +56,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const assignTaskHandler = async () => {
     setIsLoading(true);
 
-    const updatedStatus = { assignee: { connect: { id: session?.user.id } } };
+    const updatedStatus = { assignee: { connect: { id: userSession.id } } };
 
     const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
       method: "PUT",
@@ -157,7 +158,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
           onClick={assignTaskHandler}
           type="blue"
           isLoading={isLoading}
-          disabled={task.assigneeId === session?.user.id}
+          disabled={task.assigneeId === userSession.id}
         >
           {t.tasks.assignToMe}
         </Button>

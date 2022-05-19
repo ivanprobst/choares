@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, getTime, isToday } from "date-fns";
+import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
@@ -18,7 +19,7 @@ import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import GroupContext from "../../state/GroupContext";
-import { useSession } from "next-auth/react";
+import { userSessionAtom } from "../../state/users";
 
 const TaskItem = ({ task }: { task: TaskDBType }) => {
   const { t } = useLocale();
@@ -71,7 +72,8 @@ const TasksList = ({ tasks }: { tasks: Array<TaskDBType> | undefined }) => {
 const TasksListPanel = () => {
   const { t } = useLocale();
   const { currentGroupId } = useContext(GroupContext);
-  const { data: session } = useSession();
+
+  const [userSession] = useAtom(userSessionAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tasks, setTasks] = useState<Array<TaskDBType>>([]);
@@ -95,7 +97,7 @@ const TasksListPanel = () => {
     })
     .filter((task) => {
       if (taskFilterWho === TaskFilterWhoType.me) {
-        return task.assigneeId === session?.user.id;
+        return task.assigneeId === userSession.id;
       }
       return true;
     })

@@ -13,6 +13,7 @@
     "@next-auth/prisma-adapter": "^1.0.3",
     "@prisma/client": "^3.12.0",
     "date-fns": "^2.28.0",
+    "jotai": "^1.6.7",
     "next": "12.1.4",
     "next-auth": "^4.3.4",
     "react": "18.0.0",
