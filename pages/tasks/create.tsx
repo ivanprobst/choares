@@ -12,12 +12,13 @@ import { APIResponseType, RecurringType, UserDBType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 import { groupSessionAtom } from "../../state/groups";
+import { isLoadingAPI } from "../../state/app";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(

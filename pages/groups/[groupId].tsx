@@ -8,17 +8,18 @@ import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
 import { APIResponseType } from "../../types";
-import { ENDPOINTS, ERROR_CODES, LOCAL_STORAGE } from "../../utils/constants";
+import { ENDPOINTS, LOCAL_STORAGE } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 import { groupAtom, groupSessionAtom, groupsMapAtom } from "../../state/groups";
+import { isLoadingAPI } from "../../state/app";
 
 const GroupDetails = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [group, setGroup] = useAtom(groupAtom);
   const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
 
@@ -118,7 +119,7 @@ const GroupPage: NextPage = () => {
   const { t } = useLocale();
   const { query, isReady } = useRouter();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [groupsMap] = useAtom(groupsMapAtom);
   const [group, setGroup] = useAtom(groupAtom);
 

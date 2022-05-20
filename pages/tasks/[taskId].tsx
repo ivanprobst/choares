@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../types";
+import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { addDays, format } from "date-fns";
@@ -15,12 +15,13 @@ import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 import { userSessionAtom } from "../../state/users";
 import { taskAtom, tasksMapAtom } from "../../state/tasks";
+import { isLoadingAPI } from "../../state/app";
 
 const TaskDetails = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [userSession] = useAtom(userSessionAtom);
   const [task, setTask] = useAtom(taskAtom);
 
@@ -183,7 +184,7 @@ const TaskPage: NextPage = () => {
   const { t } = useLocale();
   const { query, isReady } = useRouter();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [tasksMap] = useAtom(tasksMapAtom);
   const [task, setTask] = useAtom(taskAtom);
 

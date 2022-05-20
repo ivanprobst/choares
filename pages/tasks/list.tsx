@@ -25,6 +25,7 @@ import {
   tasksMapAtom,
 } from "../../state/tasks";
 import { TaskAPIReturnedType, TaskAtomType } from "../../types/tasks";
+import { isLoadingAPI } from "../../state/app";
 
 const TaskItem = ({ task }: { task: TaskAtomType }) => {
   const { t } = useLocale();
@@ -178,7 +179,7 @@ const TasksList = () => {
 const TasksPage: NextPage = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [groupSession] = useAtom(groupSessionAtom);
   const [, setTasksList] = useAtom(tasksMapAtom);
 

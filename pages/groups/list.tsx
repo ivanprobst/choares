@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { NextPage } from "next";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import {
   groupsMapAtom,
 } from "../../state/groups";
 import { GroupAPIReturnedType } from "../../types/groups";
+import { isLoadingAPI } from "../../state/app";
 
 const GroupList = () => {
   const { t } = useLocale();
@@ -54,7 +55,7 @@ const GroupList = () => {
 const Groups: NextPage = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [, setGroupsList] = useAtom(groupsMapAtom);
 
   useEffect(() => {
