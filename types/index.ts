@@ -1,12 +1,14 @@
-interface APIResponseSuccess {
+interface APIResponseSuccess<DataType> {
   success: true;
-  data?: any;
+  data: DataType;
 }
 interface APIResponseFailed {
   success: false;
   error_type: string;
 }
-export type APIResponseType = APIResponseSuccess | APIResponseFailed;
+export type APIResponseType<DataType> =
+  | APIResponseSuccess<DataType>
+  | APIResponseFailed;
 
 interface DBBaseType {
   id: string;

@@ -24,7 +24,7 @@ import {
   tasksArrayFilteredAtom,
   tasksMapAtom,
 } from "../../state/tasks";
-import { TaskAPIReturnedType, TaskAtomType } from "../../types/tasks";
+import { TaskAtomType } from "../../types/tasks";
 import { isLoadingAPI } from "../../state/app";
 
 const TaskItem = ({ task }: { task: TaskAtomType }) => {
@@ -187,38 +187,34 @@ const TasksPage: NextPage = () => {
     setIsLoading(true);
 
     const fetchTasks = async () => {
+      if (!groupSession?.id) {
+        return;
+      }
+
       const response = await fetch(
-        `${ENDPOINTS.tasks}?groupId=${groupSession?.id}`,
+        `${ENDPOINTS.tasks}/getAllByGroupId?groupId=${groupSession.id}`,
         {
           method: "GET",
         }
       );
-      const responseJSON: APIResponseType = await response.json();
+      const res: APIResponseType<Array<TaskAtomType>> = await response.json();
 
-      if (responseJSON.success) {
-        const tasksSorted = responseJSON.data.sort(
-          (a: TaskAPIReturnedType, b: TaskAPIReturnedType) =>
-            getTime(new Date(a.dueDate ?? 0)) -
-            getTime(new Date(b.dueDate ?? 0))
+      if (res.success) {
+        const tasksListMap: Array<[string, TaskAtomType]> = res.data.map(
+          (task) => [task.id, task]
         );
-        const tasksListMap = tasksSorted.map((task: TaskAPIReturnedType) => [
-          task.id,
-          task,
-        ]);
         setTasksList(new Map(tasksListMap));
       } else {
         setTasksList(undefined);
-        toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
+        toast.error(`${t.tasks.errorLoadTasks} (${res.error_type})`);
+        console.error("error_type: ", res.error_type);
       }
 
       setIsLoading(false);
       return;
     };
 
-    if (groupSession?.id) {
-      fetchTasks();
-    }
+    fetchTasks();
     return;
   }, [t, groupSession]);
 

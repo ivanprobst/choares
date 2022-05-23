@@ -25,4 +25,8 @@ export const LOCAL_STORAGE = {
 
 export const ERROR_CODES = {
   noGroupDefined: "no_group_defined",
+  unsupportedRequestMethod: "unsupported_request_method",
+  sessionInvalid: "session_invalid",
+  queryInvalid: "query_incorrect",
+  databaseReadError: "database_read_error",
 };

@@ -18,9 +18,7 @@ export default async function handler(
       .json({ success: false, error_type: "session_invalid" });
   }
 
-  if (req.method === "GET") {
-    await handleGet(req, res);
-  } else if (req.method === "POST") {
+  if (req.method === "POST") {
     await handlePost(req, res);
   } else {
     res
@@ -116,32 +114,4 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   return res.status(200).json({ success: true, data: task });
-};
-
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
-
-  let getWhere: { where: any } = {
-    where: { creator: { id: session?.user?.id } },
-  }; // TODO: this default doesn't make much sense
-  if (req.query.groupId && typeof req.query.groupId === "string") {
-    getWhere = {
-      where: { group: { id: req.query.groupId } },
-    };
-  }
-
-  let tasks = undefined;
-  try {
-    tasks = await prisma.task.findMany(getWhere);
-  } catch (e) {
-    console.error(e);
-  }
-
-  if (!tasks) {
-    return res
-      .status(500)
-      .json({ success: false, error_type: "database_read_error" });
-  }
-
-  return res.status(200).json({ success: true, data: tasks });
 };
