@@ -16,6 +16,7 @@ import Button from "../../components/Button";
 import { userSessionAtom } from "../../state/users";
 import { taskAtom, tasksMapAtom } from "../../state/tasks";
 import { isLoadingAPI } from "../../state/app";
+import { TaskAtomType } from "../../types/tasks";
 
 const TaskDetails = () => {
   const { t } = useLocale();
@@ -37,22 +38,25 @@ const TaskDetails = () => {
       completedAt: task.completed ? null : new Date(),
     };
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedStatus),
-    });
-    const responseJSON: APIResponseType = await response.json();
+    const rawResponse = await fetch(
+      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStatus),
+      }
+    );
+    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.tasks.successCompleteTask);
-      setTask(responseJSON.data);
+      setTask(res.data);
     } else {
-      toast.error(`${t.tasks.errorCompleteTask} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.tasks.errorCompleteTask} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
     setIsLoading(false);
@@ -63,22 +67,25 @@ const TaskDetails = () => {
 
     const updatedStatus = { assignee: { connect: { id: userSession.id } } };
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedStatus),
-    });
-    const responseJSON: APIResponseType = await response.json();
+    const rawResponse = await fetch(
+      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStatus),
+      }
+    );
+    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.tasks.successAssignTask);
-      setTask(responseJSON.data); // TODO: fix refresh, as assignee is not included
+      setTask(res.data); // TODO: fix refresh, as assignee is not included
     } else {
-      toast.error(`${t.tasks.errorAssignTask} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.tasks.errorAssignTask} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
     setIsLoading(false);
@@ -91,24 +98,25 @@ const TaskDetails = () => {
       dueDate: addDays(new Date(), 1),
     };
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedDueDate),
-    });
-    const responseJSON: APIResponseType = await response.json();
+    const rawResponse = await fetch(
+      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedDueDate),
+      }
+    );
+    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.tasks.successRescheduleTask);
-      setTask(responseJSON.data);
+      setTask(res.data);
     } else {
-      toast.error(
-        `${t.tasks.errorRescheduleTask} (${responseJSON.error_type})`
-      );
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.tasks.errorRescheduleTask} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
     setIsLoading(false);
@@ -117,16 +125,19 @@ const TaskDetails = () => {
   const deleteTaskHandler = async () => {
     setIsLoading(true);
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
-      method: "DELETE",
-    });
-    const responseJSON: APIResponseType = await response.json();
+    const rawResponse = await fetch(
+      `${ENDPOINTS.tasks}/deleteTaskById?taskId=${task.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.tasks.successDeleteTask);
     } else {
-      toast.error(`${t.tasks.errorDeleteTask} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.tasks.errorDeleteTask} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
     setIsLoading(false);
@@ -192,17 +203,20 @@ const TaskPage: NextPage = () => {
     setIsLoading(true);
 
     const fetchTask = async () => {
-      const response = await fetch(`${ENDPOINTS.tasks}/${taskId}`, {
-        method: "GET",
-      });
-      const responseJSON: APIResponseType = await response.json();
+      const rawResponse = await fetch(
+        `${ENDPOINTS.tasks}/getTaskById?taskId=${taskId}`,
+        {
+          method: "GET",
+        }
+      );
+      const res: APIResponseType<TaskAtomType> = await rawResponse.json();
 
-      if (responseJSON.success) {
-        setTask(responseJSON.data);
+      if (res.success) {
+        setTask(res.data);
       } else {
         setTask(undefined);
-        toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
+        toast.error(`${t.tasks.errorLoadTasks} (${res.error_type})`);
+        console.error("error_type: ", res.error_type);
       }
 
       setIsLoading(false);

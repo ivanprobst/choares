@@ -191,13 +191,14 @@ const TasksPage: NextPage = () => {
         return;
       }
 
-      const response = await fetch(
-        `${ENDPOINTS.tasks}/getAllByGroupId?groupId=${groupSession.id}`,
+      const rawResponse = await fetch(
+        `${ENDPOINTS.tasks}/getAllTasksByGroupId?groupId=${groupSession.id}`,
         {
           method: "GET",
         }
       );
-      const res: APIResponseType<Array<TaskAtomType>> = await response.json();
+      const res: APIResponseType<Array<TaskAtomType>> =
+        await rawResponse.json();
 
       if (res.success) {
         const tasksListMap: Array<[string, TaskAtomType]> = res.data.map(

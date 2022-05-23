@@ -10,43 +10,46 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const session = await getSession({ req });
-  if (!sessionAndMethodAreValid(req, res, session, "GET")) {
+  if (!sessionAndMethodAreValid(req, res, session, "PUT")) {
     return;
   }
 
-  const { groupId } = req.query;
-  if (!groupId || typeof groupId !== "string") {
+  const { taskId } = req.query;
+  if (!taskId || typeof taskId !== "string") {
     return res
       .status(400)
       .json({ success: false, error_type: ERROR_CODES.queryInvalid });
   }
 
-  // TODO: check the user is part of the group
-  // (otherwise you can get any group's tasks,
-  // as long as you have the groupId)
+  const taskData = req.body;
+  if (!taskData || !taskDataIsValid(taskData)) {
+    return res
+      .status(400)
+      .json({ success: false, error_type: ERROR_CODES.dataFormatIncorrect });
+  }
 
-  let tasks = undefined;
+  // TODO: check the user is part of the group
+  // (otherwise you can't delete the task)
+
+  let task = undefined;
   try {
-    tasks = await prisma.task.findMany({
-      where: { group: { id: groupId } },
-      orderBy: [
-        {
-          dueDate: "asc",
-        },
-        {
-          name: "asc",
-        },
-      ],
+    task = await prisma.task.update({
+      where: { id: taskId },
+      data: taskData,
     });
   } catch (e) {
     console.error(e);
   }
 
-  if (!tasks) {
+  if (!task) {
     return res
       .status(500)
       .json({ success: false, error_type: ERROR_CODES.databaseUnkownError });
   }
 
-  return res.status(200).json({ success: true, data: tasks });
+  return res.status(200).json({ success: true, data: task });
 }
+
+const taskDataIsValid = (data: any) => {
+  return !!data.dueDate || data.completed !== undefined || !!data.assignee;
+};

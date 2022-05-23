@@ -28,5 +28,6 @@ export const ERROR_CODES = {
   unsupportedRequestMethod: "unsupported_request_method",
   sessionInvalid: "session_invalid",
   queryInvalid: "query_incorrect",
-  databaseReadError: "database_read_error",
+  dataFormatIncorrect: "data_format_incorrect",
+  databaseUnkownError: "database_unknown_error",
 };

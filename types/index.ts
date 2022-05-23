@@ -40,19 +40,8 @@ export interface TaskDataType {
   completed: boolean;
   completedAt?: Date;
 }
-export type TaskDBType = DBBaseType & TaskDataType;
 export const isTaskDataType = (data: any): data is TaskDataType => {
   return !!data.name && !!data.groupId;
-};
-export const isTaskUpdateType = (data: any) => {
-  return (
-    !!data.name ||
-    !!data.description ||
-    !!data.dueDate ||
-    data.completed !== undefined ||
-    !!data.completedAt ||
-    !!data.assignee
-  );
 };
 
 export interface GroupDataType {
