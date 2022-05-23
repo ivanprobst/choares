@@ -1,34 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, TaskDBType } from "../../types";
+import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
-import { Tab, TabsContainer } from "../../components/Tab";
 import { addDays, format } from "date-fns";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
-import { useSession } from "next-auth/react";
+import { userSessionAtom } from "../../state/users";
+import { taskAtom, tasksMapAtom } from "../../state/tasks";
+import { isLoadingAPI } from "../../state/app";
 
-const TaskDetails = ({ task }: { task: TaskDBType }) => {
+const TaskDetails = () => {
   const { t } = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [currentTask, setCurrentTask] = useState<TaskDBType>(task);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [userSession] = useAtom(userSessionAtom);
+  const [task, setTask] = useAtom(taskAtom);
+
+  if (!task) {
+    return null;
+  }
 
   const completeTaskHandler = async () => {
     setIsLoading(true);
 
     const updatedStatus = {
-      completed: !currentTask.completed,
-      completedAt: currentTask.completed ? null : new Date(),
+      completed: !task.completed,
+      completedAt: task.completed ? null : new Date(),
     };
 
     const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
@@ -43,7 +49,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
 
     if (responseJSON.success) {
       toast.success(t.tasks.successCompleteTask);
-      setCurrentTask(responseJSON.data);
+      setTask(responseJSON.data);
     } else {
       toast.error(`${t.tasks.errorCompleteTask} (${responseJSON.error_type})`);
       console.error("error_type: ", responseJSON.error_type);
@@ -55,7 +61,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const assignTaskHandler = async () => {
     setIsLoading(true);
 
-    const updatedStatus = { assignee: { connect: { id: session?.user.id } } };
+    const updatedStatus = { assignee: { connect: { id: userSession.id } } };
 
     const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
       method: "PUT",
@@ -69,7 +75,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
 
     if (responseJSON.success) {
       toast.success(t.tasks.successAssignTask);
-      setCurrentTask(responseJSON.data); // TODO: fix refresh, as assignee is not included
+      setTask(responseJSON.data); // TODO: fix refresh, as assignee is not included
     } else {
       toast.error(`${t.tasks.errorAssignTask} (${responseJSON.error_type})`);
       console.error("error_type: ", responseJSON.error_type);
@@ -85,7 +91,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
       dueDate: addDays(new Date(), 1),
     };
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${currentTask.id}`, {
+    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -97,7 +103,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
 
     if (responseJSON.success) {
       toast.success(t.tasks.successRescheduleTask);
-      setCurrentTask(responseJSON.data);
+      setTask(responseJSON.data);
     } else {
       toast.error(
         `${t.tasks.errorRescheduleTask} (${responseJSON.error_type})`
@@ -111,7 +117,7 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   const deleteTaskHandler = async () => {
     setIsLoading(true);
 
-    const response = await fetch(`${ENDPOINTS.tasks}/${currentTask.id}`, {
+    const response = await fetch(`${ENDPOINTS.tasks}/${task.id}`, {
       method: "DELETE",
     });
     const responseJSON: APIResponseType = await response.json();
@@ -130,8 +136,8 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   return (
     <>
       <section className={styles.taskDetails}>
-        <h2>{currentTask.name}</h2>
-        {currentTask.description && <p>{currentTask.description}</p>}
+        <h2>{task.name}</h2>
+        {task.description && <p>{task.description}</p>}
         <p>
           {task.assigneeId
             ? `Assigned to ${task.assigneeId.slice(-4)}`
@@ -139,25 +145,21 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
         </p>
         <p>
           {`${t.tasks.dueBy}: ${
-            currentTask.dueDate
-              ? format(new Date(currentTask.dueDate), "MMM d, y")
-              : "-"
+            task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
           }`}
         </p>
       </section>
 
       <section className={styles.taskActions}>
         <Button onClick={completeTaskHandler} isLoading={isLoading}>
-          {currentTask.completed
-            ? t.tasks.uncompleteTask
-            : t.tasks.completeTask}
+          {task.completed ? t.tasks.uncompleteTask : t.tasks.completeTask}
         </Button>
 
         <Button
           onClick={assignTaskHandler}
           type="blue"
           isLoading={isLoading}
-          disabled={task.assigneeId === session?.user.id}
+          disabled={task.assigneeId === userSession.id}
         >
           {t.tasks.assignToMe}
         </Button>
@@ -178,19 +180,18 @@ const TaskDetails = ({ task }: { task: TaskDBType }) => {
   );
 };
 
-const Task: NextPage = () => {
+const TaskPage: NextPage = () => {
   const { t } = useLocale();
-  const router = useRouter();
+  const { query, isReady } = useRouter();
 
-  const { taskId } = router.query;
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [task, setTask] = useState<TaskDBType | undefined>(undefined);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [tasksMap] = useAtom(tasksMapAtom);
+  const [task, setTask] = useAtom(taskAtom);
 
   useEffect(() => {
-    const fetchTask = async () => {
-      setIsLoading(true);
+    setIsLoading(true);
 
+    const fetchTask = async () => {
       const response = await fetch(`${ENDPOINTS.tasks}/${taskId}`, {
         method: "GET",
       });
@@ -208,27 +209,31 @@ const Task: NextPage = () => {
       return;
     };
 
-    if (taskId) {
-      fetchTask();
+    if (!isReady) {
+      return;
     }
-    return;
-  }, [t, taskId]);
 
-  const moveToListHandler = () => {
-    router.push(ROUTES.tasksList);
-  };
+    const { taskId } = query;
+    if (!taskId || Array.isArray(taskId)) {
+      setIsLoading(false);
+      return;
+    }
+    const taskCached = tasksMap?.get(taskId);
+    if (!taskCached) {
+      fetchTask();
+    } else {
+      setTask(taskCached);
+      setIsLoading(false);
+    }
+
+    return;
+  }, [t, query]);
 
   return (
     <LayoutAuth>
-      {isLoading ? (
-        <Spinner />
-      ) : task ? (
-        <TaskDetails task={task} />
-      ) : (
-        <BannerPageError />
-      )}
+      {isLoading ? <Spinner /> : !task ? <BannerPageError /> : <TaskDetails />}
     </LayoutAuth>
   );
 };
 
-export default Task;
+export default TaskPage;

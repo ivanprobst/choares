@@ -1783,6 +1783,7 @@ __metadata:
     eslint-config-next: 12.1.4
     eslint-config-prettier: ^8.5.0
     jest: ^27.5.1
+    jotai: ^1.6.7
     next: 12.1.4
     next-auth: ^4.3.4
     prettier: 2.6.2
@@ -3933,6 +3934,43 @@ __metadata:
   version: 4.8.0
   resolution: "jose@npm:4.8.0"
   checksum: b41e5019768b85bf46be3373eca6b199bcd4ec4ad839cbf07fd316bd9c73cc25bf7f039e6f3af082db5d66af86b11e59b13660c8040325124f8fe0bb600b56d2
+  languageName: node
+  linkType: hard
+
+"jotai@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "jotai@npm:1.6.7"
+  peerDependencies:
+    "@babel/core": "*"
+    "@babel/template": "*"
+    "@urql/core": "*"
+    immer: "*"
+    optics-ts: "*"
+    react: ">=16.8"
+    react-query: "*"
+    valtio: "*"
+    wonka: "*"
+    xstate: "*"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@babel/template":
+      optional: true
+    "@urql/core":
+      optional: true
+    immer:
+      optional: true
+    optics-ts:
+      optional: true
+    react-query:
+      optional: true
+    valtio:
+      optional: true
+    wonka:
+      optional: true
+    xstate:
+      optional: true
+  checksum: 9d579c4f82665ba23d0269cb28516d2098d30cea72437a87182b5b1999450d00898b98409424b64dd25c175d0767e5300505583b805b862c00ac9c50bca0f913
   languageName: node
   linkType: hard
 

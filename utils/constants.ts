@@ -22,3 +22,7 @@ export const ROUTES = {
 export const LOCAL_STORAGE = {
   groupId: "groupId",
 };
+
+export const ERROR_CODES = {
+  noGroupDefined: "no_group_defined",
+};

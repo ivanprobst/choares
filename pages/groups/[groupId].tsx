@@ -1,33 +1,38 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, GroupDBType } from "../../types";
-import { ENDPOINTS, ROUTES } from "../../utils/constants";
+import { APIResponseType } from "../../types";
+import { ENDPOINTS, LOCAL_STORAGE } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
-import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
-import GroupContext from "../../state/GroupContext";
+import { groupAtom, groupSessionAtom, groupsMapAtom } from "../../state/groups";
+import { isLoadingAPI } from "../../state/app";
 
-const GroupDetails = ({ group }: { group: GroupDBType }) => {
+const GroupDetails = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [currentGroup, setCurrentGroup] = useState<GroupDBType>(group);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [group, setGroup] = useAtom(groupAtom);
+  const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
 
-  const { currentGroupId, setCurrentGroupId } = useContext(GroupContext);
-  const isCurrentGroup = currentGroupId === group.id;
+  if (!group) {
+    return null;
+  }
+
+  const isCurrentGroup = groupSession?.id === group.id;
 
   const setAsCurrentGroup = async () => {
-    setCurrentGroupId && setCurrentGroupId(currentGroup.id);
-    localStorage.setItem("groupId", currentGroup.id);
-    toast.success(`${t.groups.successGroupSwitch}${currentGroup.name}`);
+    setGroupSession({ id: group.id, name: group.name });
+    localStorage.setItem(LOCAL_STORAGE.groupId, group.id);
+    toast.success(`${t.groups.successGroupSwitch}${group.name}`);
   };
 
   const addMemberHandler = async () => {
@@ -36,7 +41,7 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
     const updatedData = { userEmail };
 
     const response = await fetch(
-      `${ENDPOINTS.groups}/${currentGroup.id}/${ENDPOINTS.subMembers}`,
+      `${ENDPOINTS.groups}/${group.id}/${ENDPOINTS.subMembers}`,
       {
         method: "POST",
         headers: {
@@ -50,7 +55,7 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
 
     if (responseJSON.success) {
       toast.success(t.groups.successAddMember);
-      setCurrentGroup(responseJSON.data); // TODO: fix, we lose the members in the returned group data
+      setGroup(responseJSON.data); // TODO: fix, we lose the members in the returned group data
     } else {
       toast.error(`${t.groups.errorAddMember} (${responseJSON.error_type})`);
       console.error("error_type: ", responseJSON.error_type);
@@ -62,14 +67,12 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
   return (
     <>
       <section className={styles.groupDetails}>
-        <h2>{currentGroup.name}</h2>
+        <h2>{group.name}</h2>
         <p className={styles.groupMembers}>
           <>
             {`${t.groups.members}: `}
-            {currentGroup.members?.length > 0
-              ? currentGroup.members
-                  .map((member) => member.user.name)
-                  .join(", ")
+            {group.members?.length > 0
+              ? group.members.map((member) => member.user.name).join(", ")
               : t.groups.noMembers}
           </>
         </p>
@@ -112,19 +115,18 @@ const GroupDetails = ({ group }: { group: GroupDBType }) => {
   );
 };
 
-const Group: NextPage = () => {
+const GroupPage: NextPage = () => {
   const { t } = useLocale();
-  const router = useRouter();
+  const { query, isReady } = useRouter();
 
-  const { groupId } = router.query;
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [group, setGroup] = useState<GroupDBType | undefined>(undefined);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [groupsMap] = useAtom(groupsMapAtom);
+  const [group, setGroup] = useAtom(groupAtom);
 
   useEffect(() => {
-    const fetchGroup = async () => {
-      setIsLoading(true);
+    setIsLoading(true);
 
+    const fetchGroup = async () => {
       const response = await fetch(`${ENDPOINTS.groups}/${groupId}`, {
         method: "GET",
       });
@@ -142,32 +144,37 @@ const Group: NextPage = () => {
       return;
     };
 
-    if (groupId) {
-      fetchGroup();
+    if (!isReady) {
+      return;
     }
-    return;
-  }, [t, groupId]);
 
-  const moveToListHandler = () => {
-    router.push(ROUTES.groups);
-  };
+    const { groupId } = query;
+    if (!groupId || Array.isArray(groupId)) {
+      setIsLoading(false);
+      return;
+    }
+    const groupCached = groupsMap?.get(groupId);
+    if (!groupCached) {
+      fetchGroup();
+    } else {
+      setGroup(groupCached);
+      setIsLoading(false);
+    }
+
+    return;
+  }, [t, query]);
 
   return (
     <LayoutAuth>
-      <TabsContainer>
-        <Tab onClick={moveToListHandler} current={true}>
-          {t.groups.backGroupList}
-        </Tab>
-      </TabsContainer>
       {isLoading ? (
         <Spinner />
-      ) : group ? (
-        <GroupDetails group={group} />
-      ) : (
+      ) : !group ? (
         <BannerPageError />
+      ) : (
+        <GroupDetails />
       )}
     </LayoutAuth>
   );
 };
 
-export default Group;
+export default GroupPage;
