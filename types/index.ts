@@ -6,7 +6,7 @@ interface APIResponseFailed {
   success: false;
   error_type: string;
 }
-export type APIResponseType<DataType> =
+export type APIResponseType<DataType = undefined> =
   | APIResponseSuccess<DataType>
   | APIResponseFailed;
 
@@ -40,11 +40,8 @@ export interface TaskDataType {
   completed: boolean;
   completedAt?: Date;
 }
-export const isTaskDataType = (data: any): data is TaskDataType => {
-  return !!data.name && !!data.groupId;
-};
 
-export interface GroupDataType {
+interface GroupDataType {
   name: string;
   members: Array<{ user: UserDataType }>;
 }

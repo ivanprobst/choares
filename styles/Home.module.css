@@ -84,6 +84,10 @@
   font-family: inherit;
   font-size: var(--font-size-normal);
 }
+  .input:disabled{
+    background: var(--color-gray-light);
+    cursor: not-allowed;
+  }
 
 .button{
   width: 100%;

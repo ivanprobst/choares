@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -8,17 +8,19 @@ import { useAtom } from "jotai";
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, RecurringType, UserDBType } from "../../types";
+import { APIResponseType, RecurringType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 import { groupSessionAtom } from "../../state/groups";
 import { isLoadingAPI } from "../../state/app";
+import { TaskAtomType } from "../../types/tasks";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [groupSession] = useAtom(groupSessionAtom);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(
@@ -27,43 +29,11 @@ const TaskCreationForm = () => {
   const [assigneeId, setAssigneeId] = useState("");
   const [recurring, setRecurring] = useState<RecurringType | "">("");
 
-  const [groupSession] = useAtom(groupSessionAtom);
-  const [groupUsers, setGroupUsers] = useState<Array<UserDBType>>([]);
-
-  const taskCreationDisabled = name === "" || !groupSession?.id;
-
-  // TODO: replace with state
-  useEffect(() => {
-    const fetchGroup = async () => {
-      setIsLoading(true);
-
-      const response = await fetch(`${ENDPOINTS.groups}/${groupSession?.id}`, {
-        method: "GET",
-      });
-      const responseJSON: APIResponseType = await response.json();
-
-      if (responseJSON.success) {
-        const groupUsers = responseJSON.data.members.map(
-          (member: any) => member.user
-        );
-        setGroupUsers(groupUsers);
-      } else {
-        setGroupUsers([]);
-        toast.error(`${t.groups.errorLoadGroups} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
-      }
-
-      setIsLoading(false);
-      return;
-    };
-
-    if (groupSession?.id) {
-      fetchGroup();
-    }
-    return;
-  }, [t, groupSession]);
+  const taskButtonDisabled = name === "" || !groupSession?.id || isLoading;
 
   const createTaskHandler = async () => {
+    setIsLoading(true);
+
     const taskData = {
       groupId: groupSession?.id,
       name: name || null,
@@ -73,7 +43,7 @@ const TaskCreationForm = () => {
       assigneeId: assigneeId || null,
     };
 
-    const response = await fetch(ENDPOINTS.tasks, {
+    const rawResponse = await fetch(`${ENDPOINTS.tasks}/createTask`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -81,16 +51,17 @@ const TaskCreationForm = () => {
       },
       body: JSON.stringify(taskData),
     });
-    const responseJSON: APIResponseType = await response.json();
+    const res: APIResponseType = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.tasks.successTaskCreated);
       router.push(ROUTES.tasksList);
     } else {
-      toast.error(`${t.tasks.errorCreateTask} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.tasks.errorCreateTask} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
+    setIsLoading(false);
     return;
   };
 
@@ -107,6 +78,7 @@ const TaskCreationForm = () => {
           className={styles.input}
           rows={2}
           placeholder={t.tasks.taskLabelName}
+          disabled={isLoading}
           required
         ></textarea>
       </div>
@@ -122,6 +94,7 @@ const TaskCreationForm = () => {
           className={styles.input}
           rows={4}
           placeholder={t.tasks.taskLabelDetails}
+          disabled={isLoading}
         ></textarea>
       </div>
 
@@ -136,6 +109,7 @@ const TaskCreationForm = () => {
           type="date"
           className={styles.input}
           placeholder={t.tasks.taskLabelDueDate}
+          disabled={isLoading}
         />
       </div>
 
@@ -174,7 +148,7 @@ const TaskCreationForm = () => {
           disabled={isLoading}
         >
           <option value="">{t.tasks.noAssignee}</option>
-          {groupUsers.map((user) => (
+          {groupSession?.members.map(({ user }) => (
             <option key={user.id} value={user.id}>
               {user.name}
             </option>
@@ -182,7 +156,7 @@ const TaskCreationForm = () => {
         </select>
       </div>
 
-      <Button onClick={createTaskHandler} disabled={taskCreationDisabled}>
+      <Button onClick={createTaskHandler} disabled={taskButtonDisabled}>
         {t.tasks.createTaskButton}
       </Button>
     </>

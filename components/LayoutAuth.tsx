@@ -13,6 +13,7 @@ import { APIResponseType } from "../types";
 import toast from "react-hot-toast";
 import { userSessionAtom } from "../state/users";
 import { groupSessionAtom } from "../state/groups";
+import { GroupAtomType } from "../types/groups";
 
 const getCurrentGroup = async () => {
   const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
@@ -21,7 +22,7 @@ const getCurrentGroup = async () => {
     const response = await fetch(`${ENDPOINTS.groups}/${currentGroupId}`, {
       method: "GET",
     });
-    const responseJSON: APIResponseType = await response.json();
+    const responseJSON: APIResponseType<GroupAtomType> = await response.json();
 
     if (!responseJSON.success) {
       return { success: false, error_type: responseJSON.error_type };
@@ -32,7 +33,8 @@ const getCurrentGroup = async () => {
     const response = await fetch(ENDPOINTS.groups, {
       method: "GET",
     });
-    const responseJSON: APIResponseType = await response.json();
+    const responseJSON: APIResponseType<Array<GroupAtomType>> =
+      await response.json();
 
     if (!responseJSON.success) {
       return { success: false, error_type: responseJSON.error_type };
@@ -73,7 +75,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     const initCurrentGroupdId = async () => {
       const { success, error_type, group } = await getCurrentGroup();
 
-      if (!success) {
+      if (!success || !group) {
         // TODO: entire system fails in this case, bring to error page
         toast.error(`${t.groups.errorNoGroup} (${error_type})`);
         console.error(`error_type: ${error_type}`);
@@ -84,6 +86,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       setGroupSession({
         id: group.id,
         name: group.name,
+        members: group.members,
       });
     };
 

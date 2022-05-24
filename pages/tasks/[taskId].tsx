@@ -131,7 +131,7 @@ const TaskDetails = () => {
         method: "DELETE",
       }
     );
-    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
+    const res: APIResponseType = await rawResponse.json();
 
     if (res.success) {
       toast.success(t.tasks.successDeleteTask);
