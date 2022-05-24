@@ -8,9 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "GET") {
-    await handleGet(req, res);
-  } else if (req.method === "POST") {
+  if (req.method === "POST") {
     await handlePost(req, res);
   } else {
     res
@@ -77,33 +75,4 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   return res.status(200).json({ success: true, data: task });
-};
-
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
-
-  if (!session || !session.user) {
-    return res
-      .status(403)
-      .json({ success: false, error_type: "session_invalid" });
-  }
-
-  // TODO: make more generic? here we always pull list of groups we are member of
-  let groups = undefined;
-  try {
-    groups = await prisma.group.findMany({
-      where: { members: { some: { userId: session.user.id } } },
-      include: { members: { include: { user: true } } },
-    });
-  } catch (e) {
-    console.error(e);
-  }
-
-  if (!groups) {
-    return res
-      .status(500)
-      .json({ success: false, error_type: "database_read_error" });
-  }
-
-  return res.status(200).json({ success: true, data: groups });
 };

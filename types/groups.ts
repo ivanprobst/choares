@@ -11,9 +11,3 @@ export interface GroupAtomType {
   name: string;
   members: Array<{ user: UserAtomType }>;
 }
-
-export interface GroupAPIReturnedType {
-  id: string;
-  name: string;
-  members: Array<{ user: UserAtomType }>;
-}
