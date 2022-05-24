@@ -2,28 +2,34 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import { APIResponseType, GroupDBType } from "../../types";
+import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
+import { GroupAtomType } from "../../types/groups";
+import { isLoadingAPI } from "../../state/app";
 
 const GroupCreate: NextPage = () => {
   const { t } = useLocale();
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [name, setName] = useState("");
 
-  const submitDisabled = name === "";
+  const createButtonDisabled = name === "" || isLoading;
 
   const createGroupHandler = async () => {
+    setIsLoading(true);
+
     const groupData = {
       name: name || null,
     };
 
-    const response = await fetch(ENDPOINTS.groups, {
+    const rawResponse = await fetch(`${ENDPOINTS.groups}/createGroup`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -31,19 +37,20 @@ const GroupCreate: NextPage = () => {
       },
       body: JSON.stringify(groupData),
     });
-    const responseJSON: APIResponseType = await response.json();
+    const res: APIResponseType<GroupAtomType> = await rawResponse.json();
 
-    if (responseJSON.success) {
-      const groupData = responseJSON.data as GroupDBType;
+    if (res.success) {
+      const groupData = res.data;
       toast.success(
         `${t.groups.successGroupCreated} (${JSON.stringify(groupData)})`
       ); // TODO: cleanup toast
       router.push(ROUTES.groups);
     } else {
-      toast.error(`${t.groups.errorCreateGroup} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.groups.errorCreateGroup} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
+    setIsLoading(false);
     return;
   };
 
@@ -63,10 +70,11 @@ const GroupCreate: NextPage = () => {
           className={styles.input}
           placeholder={t.groups.groupLabelName}
           required
+          disabled={isLoading}
         />
       </div>
 
-      <Button onClick={createGroupHandler} disabled={submitDisabled}>
+      <Button onClick={createGroupHandler} disabled={createButtonDisabled}>
         {t.groups.createGroupButton}
       </Button>
     </LayoutAuth>

@@ -13,7 +13,6 @@ import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 import { groupSessionAtom } from "../../state/groups";
 import { isLoadingAPI } from "../../state/app";
-import { TaskAtomType } from "../../types/tasks";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();

@@ -46,9 +46,6 @@ interface GroupDataType {
   members: Array<{ user: UserDataType }>;
 }
 export type GroupDBType = DBBaseType & GroupDataType;
-export const isGroupCreationType = (data: any): data is GroupDataType => {
-  return !!data.name;
-};
 
 export interface UserDataType {
   name: string;
