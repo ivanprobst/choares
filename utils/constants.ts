@@ -5,7 +5,6 @@ export const GENERIC = {
 export const ENDPOINTS = {
   tasks: "/api/tasks",
   groups: "/api/groups",
-  subMembers: "members",
 };
 
 export const ROUTES = {
@@ -30,4 +29,5 @@ export const ERROR_CODES = {
   queryInvalid: "query_incorrect",
   dataFormatIncorrect: "data_format_incorrect",
   databaseUnkownError: "database_unknown_error",
+  userNotFound: "user_not_found",
 };

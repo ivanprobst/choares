@@ -19,9 +19,12 @@ const getCurrentGroup = async () => {
   const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
 
   if (currentGroupId) {
-    const response = await fetch(`${ENDPOINTS.groups}/${currentGroupId}`, {
-      method: "GET",
-    });
+    const response = await fetch(
+      `${ENDPOINTS.groups}/getGroupById?groupId=${currentGroupId}`,
+      {
+        method: "GET",
+      }
+    );
     const responseJSON: APIResponseType<GroupAtomType> = await response.json();
 
     if (!responseJSON.success) {
@@ -30,9 +33,12 @@ const getCurrentGroup = async () => {
 
     return { success: true, group: responseJSON.data };
   } else {
-    const response = await fetch(ENDPOINTS.groups, {
-      method: "GET",
-    });
+    const response = await fetch(
+      `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
+      {
+        method: "GET",
+      }
+    );
     const responseJSON: APIResponseType<Array<GroupAtomType>> =
       await response.json();
 
