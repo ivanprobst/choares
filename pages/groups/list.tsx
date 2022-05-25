@@ -7,7 +7,6 @@ import { useAtom } from "jotai";
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../hooks/useLocale";
-import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import {
@@ -16,7 +15,8 @@ import {
   groupsMapAtom,
 } from "../../state/groups";
 import { GroupAtomType } from "../../types/groups";
-import { isLoadingAPI } from "../../state/app";
+import { isLoadingAPIAtom } from "../../state/app";
+import { useAPI } from "../../hooks/useAPI";
 
 const GroupList = () => {
   const { t } = useLocale();
@@ -55,57 +55,42 @@ const GroupList = () => {
 const Groups: NextPage = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoadingAPI] = useAtom(isLoadingAPIAtom);
   const [, setGroupsList] = useAtom(groupsMapAtom);
   const [groupSession] = useAtom(groupSessionAtom);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    const fetchGroups = async () => {
-      if (!groupSession) {
-        return;
-      }
-
-      const rawResponse = await fetch(
-        `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
-        {
-          method: "GET",
-        }
+  const processSuccess = (data: Array<GroupAtomType>) => {
+    // We display the current group at the top of the list
+    const groupsListMap = data
+      .map((group) => [group.id, group] as [string, GroupAtomType])
+      .sort(([, groupA], [, groupB]) =>
+        groupA.id === groupSession?.id
+          ? -1
+          : groupB.id === groupSession?.id
+          ? 1
+          : 0
       );
-      const res: APIResponseType<Array<GroupAtomType>> =
-        await rawResponse.json();
+    setGroupsList(new Map(groupsListMap));
+    return;
+  };
+  const { runFetch } = useAPI<Array<GroupAtomType>>({ mode: "manual" });
 
-      if (res.success) {
-        // We display the current group at the top of the list
-        const groupsListMap = res.data
-          .map((group) => [group.id, group] as [string, GroupAtomType])
-          .sort(([, groupA], [, groupB]) =>
-            groupA.id === groupSession.id
-              ? -1
-              : groupB.id === groupSession.id
-              ? 1
-              : 0
-          );
-        setGroupsList(new Map(groupsListMap));
-      } else {
-        setGroupsList(undefined);
-        toast.error(`${t.groups.errorLoadGroups} (${res.error_type})`);
-        console.error("error_type: ", res.error_type);
-      }
+  useEffect(() => {
+    if (groupSession) {
+      runFetch({
+        endpoint: `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
+        method: "GET",
+        processSuccess,
+      });
+    }
 
-      setIsLoading(false);
-      return;
-    };
-
-    fetchGroups();
     return;
   }, [t, groupSession]);
 
   return (
     <LayoutAuth>
       <a href={ROUTES.groupsCreate}>Create a new group</a>
-      {isLoading ? <Spinner /> : <GroupList />}
+      {isLoadingAPI ? <Spinner /> : <GroupList />}
     </LayoutAuth>
   );
 };
