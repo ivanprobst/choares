@@ -15,7 +15,7 @@ import {
   groupSessionAtom,
   groupsMapAtom,
 } from "../../state/groups";
-import { GroupAPIReturnedType } from "../../types/groups";
+import { GroupAtomType } from "../../types/groups";
 import { isLoadingAPI } from "../../state/app";
 
 const GroupList = () => {
@@ -57,25 +57,41 @@ const Groups: NextPage = () => {
 
   const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
   const [, setGroupsList] = useAtom(groupsMapAtom);
+  const [groupSession] = useAtom(groupSessionAtom);
 
   useEffect(() => {
+    setIsLoading(true);
+
     const fetchGroups = async () => {
-      setIsLoading(true);
+      if (!groupSession) {
+        return;
+      }
 
-      const response = await fetch(ENDPOINTS.groups, {
-        method: "GET",
-      });
-      const responseJSON: APIResponseType = await response.json();
+      const rawResponse = await fetch(
+        `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
+        {
+          method: "GET",
+        }
+      );
+      const res: APIResponseType<Array<GroupAtomType>> =
+        await rawResponse.json();
 
-      if (responseJSON.success) {
-        const groupsListMap = responseJSON.data.map(
-          (group: GroupAPIReturnedType) => [group.id, group]
-        );
+      if (res.success) {
+        // We display the current group at the top of the list
+        const groupsListMap = res.data
+          .map((group) => [group.id, group] as [string, GroupAtomType])
+          .sort(([, groupA], [, groupB]) =>
+            groupA.id === groupSession.id
+              ? -1
+              : groupB.id === groupSession.id
+              ? 1
+              : 0
+          );
         setGroupsList(new Map(groupsListMap));
       } else {
         setGroupsList(undefined);
-        toast.error(`${t.groups.errorLoadGroups} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
+        toast.error(`${t.groups.errorLoadGroups} (${res.error_type})`);
+        console.error("error_type: ", res.error_type);
       }
 
       setIsLoading(false);
@@ -84,7 +100,7 @@ const Groups: NextPage = () => {
 
     fetchGroups();
     return;
-  }, [t]);
+  }, [t, groupSession]);
 
   return (
     <LayoutAuth>

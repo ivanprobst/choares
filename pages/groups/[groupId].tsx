@@ -14,6 +14,7 @@ import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 import { groupAtom, groupSessionAtom, groupsMapAtom } from "../../state/groups";
 import { isLoadingAPI } from "../../state/app";
+import { GroupAtomType } from "../../types/groups";
 
 const GroupDetails = () => {
   const { t } = useLocale();
@@ -30,9 +31,9 @@ const GroupDetails = () => {
   const isCurrentGroup = groupSession?.id === group.id;
 
   const setAsCurrentGroup = async () => {
-    setGroupSession({ id: group.id, name: group.name });
+    setGroupSession(group);
     localStorage.setItem(LOCAL_STORAGE.groupId, group.id);
-    toast.success(`${t.groups.successGroupSwitch}${group.name}`);
+    toast.success(`${t.groups.successGroupSwitch} ${group.name}`);
   };
 
   const addMemberHandler = async () => {
@@ -40,10 +41,10 @@ const GroupDetails = () => {
 
     const updatedData = { userEmail };
 
-    const response = await fetch(
-      `${ENDPOINTS.groups}/${group.id}/${ENDPOINTS.subMembers}`,
+    const rawResponse = await fetch(
+      `${ENDPOINTS.groups}/addMemberToGroup?groupId=${group.id}`,
       {
-        method: "POST",
+        method: "PUT",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -51,14 +52,14 @@ const GroupDetails = () => {
         body: JSON.stringify(updatedData),
       }
     );
-    const responseJSON: APIResponseType = await response.json();
+    const res: APIResponseType = await rawResponse.json();
 
-    if (responseJSON.success) {
+    if (res.success) {
       toast.success(t.groups.successAddMember);
-      setGroup(responseJSON.data); // TODO: fix, we lose the members in the returned group data
+      setGroup(res.data);
     } else {
-      toast.error(`${t.groups.errorAddMember} (${responseJSON.error_type})`);
-      console.error("error_type: ", responseJSON.error_type);
+      toast.error(`${t.groups.errorAddMember} (${res.error_type})`);
+      console.error("error_type: ", res.error_type);
     }
 
     setIsLoading(false);
@@ -127,17 +128,20 @@ const GroupPage: NextPage = () => {
     setIsLoading(true);
 
     const fetchGroup = async () => {
-      const response = await fetch(`${ENDPOINTS.groups}/${groupId}`, {
-        method: "GET",
-      });
-      const responseJSON: APIResponseType = await response.json();
+      const rawResponse = await fetch(
+        `${ENDPOINTS.groups}/getGroupById?groupId=${groupId}`,
+        {
+          method: "GET",
+        }
+      );
+      const res: APIResponseType<GroupAtomType> = await rawResponse.json();
 
-      if (responseJSON.success) {
-        setGroup(responseJSON.data);
+      if (res.success) {
+        setGroup(res.data);
       } else {
         setGroup(undefined);
-        toast.error(`${t.groups.errorLoadGroups} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
+        toast.error(`${t.groups.errorLoadGroups} (${res.error_type})`);
+        console.error("error_type: ", res.error_type);
       }
 
       setIsLoading(false);

@@ -8,11 +8,8 @@ import { useAtom } from "jotai";
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../state/useLocale";
-import {
-  APIResponseType,
-  TaskFilterWhenType,
-  TaskFilterWhoType,
-} from "../../types";
+import { APIResponseType } from "../../types";
+import { TaskFilterWhenType, TaskFilterWhoType } from "../../types/tasks";
 import Spinner from "../../components/Spinner";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import { Tab, TabsContainer } from "../../components/Tab";
@@ -24,7 +21,7 @@ import {
   tasksArrayFilteredAtom,
   tasksMapAtom,
 } from "../../state/tasks";
-import { TaskAPIReturnedType, TaskAtomType } from "../../types/tasks";
+import { TaskAtomType } from "../../types/tasks";
 import { isLoadingAPI } from "../../state/app";
 
 const TaskItem = ({ task }: { task: TaskAtomType }) => {
@@ -187,38 +184,35 @@ const TasksPage: NextPage = () => {
     setIsLoading(true);
 
     const fetchTasks = async () => {
-      const response = await fetch(
-        `${ENDPOINTS.tasks}?groupId=${groupSession?.id}`,
+      if (!groupSession?.id) {
+        return;
+      }
+
+      const rawResponse = await fetch(
+        `${ENDPOINTS.tasks}/getAllTasksByGroupId?groupId=${groupSession.id}`,
         {
           method: "GET",
         }
       );
-      const responseJSON: APIResponseType = await response.json();
+      const res: APIResponseType<Array<TaskAtomType>> =
+        await rawResponse.json();
 
-      if (responseJSON.success) {
-        const tasksSorted = responseJSON.data.sort(
-          (a: TaskAPIReturnedType, b: TaskAPIReturnedType) =>
-            getTime(new Date(a.dueDate ?? 0)) -
-            getTime(new Date(b.dueDate ?? 0))
+      if (res.success) {
+        const tasksListMap: Array<[string, TaskAtomType]> = res.data.map(
+          (task) => [task.id, task]
         );
-        const tasksListMap = tasksSorted.map((task: TaskAPIReturnedType) => [
-          task.id,
-          task,
-        ]);
         setTasksList(new Map(tasksListMap));
       } else {
         setTasksList(undefined);
-        toast.error(`${t.tasks.errorLoadTasks} (${responseJSON.error_type})`);
-        console.error("error_type: ", responseJSON.error_type);
+        toast.error(`${t.tasks.errorLoadTasks} (${res.error_type})`);
+        console.error("error_type: ", res.error_type);
       }
 
       setIsLoading(false);
       return;
     };
 
-    if (groupSession?.id) {
-      fetchTasks();
-    }
+    fetchTasks();
     return;
   }, [t, groupSession]);
 
