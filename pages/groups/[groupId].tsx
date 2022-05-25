@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
-import useLocale from "../../state/useLocale";
+import useLocale from "../../hooks/useLocale";
 import { APIResponseType } from "../../types";
 import { ENDPOINTS, LOCAL_STORAGE } from "../../utils/constants";
 import Spinner from "../../components/Spinner";

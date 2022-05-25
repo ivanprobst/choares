@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import useLocale from "../state/useLocale";
+import useLocale from "../hooks/useLocale";
 import { ROUTES } from "../utils/constants";
 import Button from "./Button";
 

@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
-import useLocale from "../../state/useLocale";
+import useLocale from "../../hooks/useLocale";
 import { RecurringType } from "../../types/tasks";
 import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";

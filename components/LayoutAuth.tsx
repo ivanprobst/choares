@@ -5,7 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useAtom } from "jotai";
 
 import styles from "../styles/Home.module.css";
-import useLocale from "../state/useLocale";
+import useLocale from "../hooks/useLocale";
 import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useRouter } from "next/router";

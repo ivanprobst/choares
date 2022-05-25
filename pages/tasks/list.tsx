@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
-import useLocale from "../../state/useLocale";
+import useLocale from "../../hooks/useLocale";
 import { APIResponseType } from "../../types";
 import { TaskFilterWhenType, TaskFilterWhoType } from "../../types/tasks";
 import Spinner from "../../components/Spinner";

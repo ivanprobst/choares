@@ -4,7 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import styles from "../styles/Home.module.css";
 import Button from "../components/Button";
 import Head from "next/head";
-import useLocale from "../state/useLocale";
+import useLocale from "../hooks/useLocale";
 import { useRouter } from "next/router";
 import { ROUTES } from "../utils/constants";
 import { NextPage } from "next";
