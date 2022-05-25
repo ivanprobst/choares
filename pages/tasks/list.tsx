@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import toast from "react-hot-toast";
-import { format, getTime, isToday } from "date-fns";
+import { format, isToday } from "date-fns";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
 import useLocale from "../../hooks/useLocale";
-import { APIResponseType } from "../../types";
 import { TaskFilterWhenType, TaskFilterWhoType } from "../../types/tasks";
 import Spinner from "../../components/Spinner";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
+import { isLoadingAPIAtom } from "../../state/app";
 import { userSessionAtom } from "../../state/users";
 import { groupSessionAtom } from "../../state/groups";
 import {
@@ -22,7 +21,7 @@ import {
   tasksMapAtom,
 } from "../../state/tasks";
 import { TaskAtomType } from "../../types/tasks";
-import { isLoadingAPI } from "../../state/app";
+import { useAPI } from "../../hooks/useAPI";
 
 const TaskItem = ({ task }: { task: TaskAtomType }) => {
   const { t } = useLocale();
@@ -176,45 +175,24 @@ const TasksList = () => {
 const TasksPage: NextPage = () => {
   const { t } = useLocale();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoading] = useAtom(isLoadingAPIAtom);
   const [groupSession] = useAtom(groupSessionAtom);
   const [, setTasksList] = useAtom(tasksMapAtom);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    const fetchTasks = async () => {
-      if (!groupSession?.id) {
-        return;
-      }
-
-      const rawResponse = await fetch(
-        `${ENDPOINTS.tasks}/getAllTasksByGroupId?groupId=${groupSession.id}`,
-        {
-          method: "GET",
-        }
-      );
-      const res: APIResponseType<Array<TaskAtomType>> =
-        await rawResponse.json();
-
-      if (res.success) {
-        const tasksListMap: Array<[string, TaskAtomType]> = res.data.map(
-          (task) => [task.id, task]
-        );
-        setTasksList(new Map(tasksListMap));
-      } else {
-        setTasksList(undefined);
-        toast.error(`${t.tasks.errorLoadTasks} (${res.error_type})`);
-        console.error("error_type: ", res.error_type);
-      }
-
-      setIsLoading(false);
-      return;
-    };
-
-    fetchTasks();
+  const processSuccess = (data: Array<TaskAtomType>) => {
+    const tasksListMap: Array<[string, TaskAtomType]> = data.map((task) => [
+      task.id,
+      task,
+    ]);
+    setTasksList(new Map(tasksListMap));
     return;
-  }, [t, groupSession]);
+  };
+
+  useAPI<Array<TaskAtomType>>({
+    endpoint: `${ENDPOINTS.tasks}/getAllTasksByGroupId?groupId=${groupSession?.id}`,
+    method: "GET",
+    processSuccess,
+  });
 
   return (
     <>
