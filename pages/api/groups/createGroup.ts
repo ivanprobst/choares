@@ -57,6 +57,19 @@ export default async function handler(
   return res.status(200).json({ success: true, data: group });
 }
 
+// TODO: add type check for each key,
+// and make the function generic
 const groupDataIsValid = (data: any) => {
-  return !!data.name;
+  const mandatoryProps = new Set(["name"]);
+
+  const propsAreValid = Object.keys(data).every((key) => {
+    if (mandatoryProps.has(key)) {
+      mandatoryProps.delete(key);
+      return true;
+    }
+
+    return false;
+  });
+
+  return propsAreValid && mandatoryProps.size === 0;
 };

@@ -40,10 +40,14 @@ export default async function handler(
     console.error(e);
   }
 
-  if (!user) {
+  if (user === null) {
     return res
-      .status(400)
+      .status(404)
       .json({ success: false, error_type: ERROR_CODES.userNotFound });
+  } else if (!user) {
+    return res
+      .status(500)
+      .json({ success: false, error_type: ERROR_CODES.databaseUnkownError });
   }
 
   let group = undefined;
