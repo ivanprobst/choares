@@ -1,8 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../utils/prisma";
+import { Session } from "next-auth";
 
-import handler from "./index";
-import handlerQueryParam from "./[taskId]";
+import prisma from "../../../utils/prisma";
+import { ERROR_CODES } from "../../../utils/constants";
+
+import * as moduleNextAuth from "next-auth/react";
+import createTask from "./createTask";
+import deleteTaskById from "./deleteTaskById";
+import getAllTasksByGroupId from "./getAllTasksByGroupId";
+import getTaskById from "./getTaskById";
+import updateTask from "./updateTask";
 
 const mockRequest = (method: string, body?: any, query?: any) => {
   return {
@@ -21,203 +28,229 @@ const mockResponse = () => {
 
 describe("the API /tasks...", () => {
   let res: NextApiResponse;
-  let taskId: string;
 
-  beforeAll(async () => {
-    const task = await prisma.task.create({
-      data: { name: "THIS TASK IS CREATED FOR TEST PURPOSE" },
-    });
-    taskId = task.id;
-  });
+  beforeAll(async () => {});
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    jest
+      .spyOn(moduleNextAuth, "getSession")
+      .mockImplementation(() =>
+        Promise.resolve({ user: { id: "userId" } } as Session)
+      );
     res = mockResponse();
   });
 
-  describe("handles GET requests, and...", () => {
-    it("should return whatever is in the DB", async () => {
-      const req = mockRequest("GET");
+  afterEach(async () => {
+    jest.clearAllMocks();
+  });
 
-      await handler(req, res);
+  afterAll(async () => {});
+
+  // TODO: add test for recurring create
+  describe("handles createTask requests, and...", () => {
+    it("should fail if taskData is not valid (missing mandatory prop)", async () => {
+      const body = { description: "Task without a name" };
+      const req = mockRequest("POST", body);
+
+      await createTask(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        error_type: ERROR_CODES.dataFormatIncorrect,
+      });
+    });
+
+    it("should fail if taskData is not valid (wrong prop name)", async () => {
+      const body = {
+        name: "Task name",
+        groupId: "groupId",
+        wrongProp: "this prop is not valid",
+      };
+      const req = mockRequest("POST", body);
+
+      await createTask(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        error_type: ERROR_CODES.dataFormatIncorrect,
+      });
+    });
+
+    it("should succeed if all is valid", async () => {
+      const body = {
+        name: "Task name",
+        groupId: "groupId",
+      };
+      const req = mockRequest("POST", body);
+
+      jest
+        .spyOn(prisma.task, "create")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve({ id: "taskId" }));
+
+      await createTask(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ success: true });
     });
   });
 
-  describe("handles GET requests with query param, and...", () => {
-    it("should return 400 when empty id", async () => {
-      const req = mockRequest("GET", undefined, "");
+  // TODO: add test for recurring delete
+  describe("handles deleteTaskById requests, and...", () => {
+    it("should fail if no taskId passed in query", async () => {
+      const req = mockRequest("DELETE", null, { notaskId: "none" });
 
-      await handlerQueryParam(req, res);
+      await deleteTaskById(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        error_type: "taskId_not_found",
+        error_type: ERROR_CODES.queryInvalid,
       });
     });
 
-    it("should return 200 when correct id", async () => {
-      const req = mockRequest("GET", undefined, { taskId });
+    it("should fail if the task to delete is not found", async () => {
+      const req = mockRequest("DELETE", null, { taskId: "taskId" });
 
-      await handlerQueryParam(req, res);
+      jest
+        .spyOn(prisma.task, "findUnique")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve(null));
+
+      await deleteTaskById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        error_type: ERROR_CODES.taskNotFound,
+      });
+    });
+
+    it("should succeed if all is valid", async () => {
+      const req = mockRequest("DELETE", null, { taskId: "taskId" });
+
+      jest
+        .spyOn(prisma.task, "findUnique")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve({ id: "taskId" }));
+
+      jest
+        .spyOn(prisma.task, "delete")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve({ id: "taskId" }));
+
+      await deleteTaskById(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: true,
-        })
-      );
+      expect(res.json).toHaveBeenCalledWith({ success: true });
     });
   });
 
-  describe("handles PUT requests with query param, and...", () => {
-    it("should return 400 when empty id", async () => {
-      const req = mockRequest("PUT", { description: "" }, "");
+  describe("handles getAllTasksByGroupId requests, and...", () => {
+    it("should fail if no groupId passed in query", async () => {
+      const req = mockRequest("GET", null, { noGroupId: "none" });
 
-      await handlerQueryParam(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        error_type: "taskId_not_found",
-      });
-    });
-
-    it("should return 400 when empty data", async () => {
-      const req = mockRequest("PUT", undefined, { taskId });
-
-      await handlerQueryParam(req, res);
+      await getAllTasksByGroupId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        error_type: "data_not_found",
+        error_type: ERROR_CODES.queryInvalid,
       });
     });
 
-    it("should return 400 when wrong data", async () => {
-      const req = mockRequest("PUT", { wrongdatakey: "bla" }, { taskId });
+    it("should succeed if all is valid", async () => {
+      const req = mockRequest("GET", null, { groupId: "groupId" });
 
-      await handlerQueryParam(req, res);
+      jest
+        .spyOn(prisma.task, "findMany")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve(["task1", "task2"]));
 
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        error_type: "data_format_incorrect",
-      });
-    });
-
-    it("should return 200 when correct id and data", async () => {
-      const req = mockRequest("PUT", { description: "bla" }, { taskId });
-
-      await handlerQueryParam(req, res);
+      await getAllTasksByGroupId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: true,
-        })
-      );
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        data: ["task1", "task2"],
+      });
     });
   });
 
-  describe("handles DELETE requests with query param, and...", () => {
-    it("should return 400 when empty id", async () => {
-      const req = mockRequest("DELETE", undefined, "");
+  describe("handles getTaskById requests, and...", () => {
+    it("should fail if no taskId passed in query", async () => {
+      const req = mockRequest("GET", null, { noTaskId: "none" });
 
-      await handlerQueryParam(req, res);
+      await getTaskById(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        error_type: "taskId_not_found",
+        error_type: ERROR_CODES.queryInvalid,
       });
     });
 
-    it("should return 200 when correct id", async () => {
-      const req = mockRequest("DELETE", undefined, { taskId });
+    it("should succeed if all is valid", async () => {
+      const req = mockRequest("GET", null, { taskId: "taskId" });
 
-      await handlerQueryParam(req, res);
+      jest
+        .spyOn(prisma.task, "findUnique")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve({ id: "task1" }));
+
+      await getTaskById(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: true,
-        })
-      );
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        data: { id: "task1" },
+      });
     });
   });
 
-  describe("handles POST requests, and...", () => {
-    it("should return 400 when missing data sent from client", async () => {
-      const req = mockRequest("POST");
+  describe("handles updateTask requests, and...", () => {
+    it("should fail if no taskId passed in query", async () => {
+      const req = mockRequest("PUT", null, { noTaskId: "none" });
 
-      await handler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        error_type: "data_not_found",
-      });
-    });
-
-    it("should return 400 when faulty data sent from client", async () => {
-      const req = mockRequest("POST", { data: "bad data" });
-
-      await handler(req, res);
+      await updateTask(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        error_type: "data_format_incorrect",
+        error_type: ERROR_CODES.queryInvalid,
       });
     });
 
-    it("should return 500 when faulty data sent from client", async () => {
-      const req = mockRequest("POST", {
-        name: "testname",
-        bla: "testdesc",
-      });
+    it("should fail if taskData is not valid (wrong prop name)", async () => {
+      const body = { wrongProp: "this prop is not valid" };
+      const req = mockRequest("PUT", body, { taskId: "taskId" });
 
-      await handler(req, res);
+      await updateTask(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        error_type: "database_write_error",
+        error_type: ERROR_CODES.dataFormatIncorrect,
       });
     });
 
-    it("should return 200 when data correct...", async () => {
-      const req = mockRequest("POST", {
-        name: "testname",
-        description: "testdesc",
-      });
+    it("should succeed if all is valid", async () => {
+      const body = { completed: true };
+      const req = mockRequest("PUT", body, { taskId: "taskId" });
 
-      // TODO: Add stubbing to prevent database write
+      jest
+        .spyOn(prisma.task, "update")
+        // @ts-ignore
+        .mockImplementation(() => Promise.resolve({ id: "taskId" }));
 
-      await handler(req, res);
+      await updateTask(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: true,
-        })
-      );
-    });
-  });
-
-  describe("handles other requests, and...", () => {
-    it("should return 405", async () => {
-      const req = mockRequest("PUT");
-
-      await handler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(405);
       expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        error_type: "unsupported_request_method",
+        success: true,
+        data: { id: "taskId" },
       });
     });
   });
