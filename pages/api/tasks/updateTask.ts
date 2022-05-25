@@ -50,6 +50,14 @@ export default async function handler(
   return res.status(200).json({ success: true, data: task });
 }
 
+// TODO: add type check for each key,
+// and make the function generic
 const taskDataIsValid = (data: any) => {
-  return !!data.dueDate || data.completed !== undefined || !!data.assignee;
+  const optionalProps = new Set(["dueDate", "completed", "assignee"]);
+
+  const propsAreValid = Object.keys(data).every((key) => {
+    return optionalProps.has(key);
+  });
+
+  return propsAreValid;
 };

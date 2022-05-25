@@ -32,9 +32,11 @@ export default async function handler(
     console.error(e);
   }
 
-  // TODO: if null => record not found
-  // if undefined => db read error
-  if (!taskToDelete) {
+  if (taskToDelete === null) {
+    return res
+      .status(404)
+      .json({ success: false, error_type: ERROR_CODES.taskNotFound });
+  } else if (!taskToDelete) {
     return res
       .status(500)
       .json({ success: false, error_type: ERROR_CODES.databaseUnkownError });

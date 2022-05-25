@@ -100,6 +100,25 @@ const createRecurringTasks = async (computedTask: any) => {
   return tasksCreated;
 };
 
+// TODO: add type check for each key,
+// and make the function generic
 const taskDataIsValid = (data: any) => {
-  return !!data.name && !!data.groupId;
+  const mandatoryProps = new Set(["name", "groupId"]);
+  const optionalProps = new Set([
+    "description",
+    "dueDate",
+    "recurring",
+    "assigneeId",
+  ]);
+
+  const propsAreValid = Object.keys(data).every((key) => {
+    if (mandatoryProps.has(key)) {
+      mandatoryProps.delete(key);
+      return true;
+    }
+
+    return optionalProps.has(key);
+  });
+
+  return propsAreValid && mandatoryProps.size === 0;
 };

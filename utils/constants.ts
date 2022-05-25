@@ -30,4 +30,5 @@ export const ERROR_CODES = {
   dataFormatIncorrect: "data_format_incorrect",
   databaseUnkownError: "database_unknown_error",
   userNotFound: "user_not_found",
+  taskNotFound: "task_not_found",
 };
