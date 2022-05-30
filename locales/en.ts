@@ -8,6 +8,7 @@ export const en = {
     signin: "Sign in",
     signout: "Sign out",
     current: "current",
+    error: "Error",
   },
   tasks: {
     task: "Task",
@@ -37,6 +38,7 @@ export const en = {
     rescheduleTaskTomorrow: "Do tomorrow",
     successTaskCreated: "Task created.",
     successCompleteTask: "Task completed",
+    successUncompleteTask: "Task un-completed",
     successAssignTask: "Task assigned",
     successDeleteTask: "Task deleted",
     successRescheduleTask: "Task scheduled for tomorrow",

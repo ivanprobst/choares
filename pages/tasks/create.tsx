@@ -7,19 +7,19 @@ import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
 import styles from "../../styles/Home.module.css";
-import useLocale from "../../state/useLocale";
+import useLocale from "../../hooks/useLocale";
 import { RecurringType } from "../../types/tasks";
-import { APIResponseType } from "../../types";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";
 import { groupSessionAtom } from "../../state/groups";
-import { isLoadingAPI } from "../../state/app";
+import { isLoadingAPIAtom } from "../../state/app";
+import { useAPI } from "../../hooks/useAPI";
 
 const TaskCreationForm = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoadingAPI] = useAtom(isLoadingAPIAtom);
   const [groupSession] = useAtom(groupSessionAtom);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -29,11 +29,11 @@ const TaskCreationForm = () => {
   const [assigneeId, setAssigneeId] = useState("");
   const [recurring, setRecurring] = useState<RecurringType | "">("");
 
-  const taskButtonDisabled = name === "" || !groupSession?.id || isLoading;
+  const taskButtonDisabled = name === "" || !groupSession?.id || isLoadingAPI;
+
+  const { runFetch } = useAPI({ mode: "manual" });
 
   const createTaskHandler = async () => {
-    setIsLoading(true);
-
     const taskData = {
       groupId: groupSession?.id,
       name: name || null,
@@ -43,25 +43,18 @@ const TaskCreationForm = () => {
       assigneeId: assigneeId || null,
     };
 
-    const rawResponse = await fetch(`${ENDPOINTS.tasks}/createTask`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(taskData),
-    });
-    const res: APIResponseType = await rawResponse.json();
-
-    if (res.success) {
+    const processSuccess = () => {
       toast.success(t.tasks.successTaskCreated);
       router.push(ROUTES.tasksList);
-    } else {
-      toast.error(`${t.tasks.errorCreateTask} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      return;
+    };
+    await runFetch({
+      method: "POST",
+      endpoint: `${ENDPOINTS.tasks}/createTask`,
+      body: taskData,
+      processSuccess,
+    });
 
-    setIsLoading(false);
     return;
   };
 
@@ -78,7 +71,7 @@ const TaskCreationForm = () => {
           className={styles.input}
           rows={2}
           placeholder={t.tasks.taskLabelName}
-          disabled={isLoading}
+          disabled={isLoadingAPI}
           required
         ></textarea>
       </div>
@@ -94,7 +87,7 @@ const TaskCreationForm = () => {
           className={styles.input}
           rows={4}
           placeholder={t.tasks.taskLabelDetails}
-          disabled={isLoading}
+          disabled={isLoadingAPI}
         ></textarea>
       </div>
 
@@ -109,7 +102,7 @@ const TaskCreationForm = () => {
           type="date"
           className={styles.input}
           placeholder={t.tasks.taskLabelDueDate}
-          disabled={isLoading}
+          disabled={isLoadingAPI}
         />
       </div>
 
@@ -123,7 +116,7 @@ const TaskCreationForm = () => {
             value={recurring}
             onChange={(e) => setRecurring(e.target.value as RecurringType)}
             className={styles.input}
-            disabled={isLoading}
+            disabled={isLoadingAPI}
           >
             <option value="">No</option>
             <option value="weekly">
@@ -145,7 +138,7 @@ const TaskCreationForm = () => {
           value={assigneeId}
           onChange={(e) => setAssigneeId(e.target.value)}
           className={styles.input}
-          disabled={isLoading}
+          disabled={isLoadingAPI}
         >
           <option value="">{t.tasks.noAssignee}</option>
           {groupSession?.members.map(({ user }) => (

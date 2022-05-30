@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const isLoadingAPI = atom<boolean>(false);
+export const isLoadingAPIAtom = atom<boolean>(false);

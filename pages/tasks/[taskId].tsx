@@ -6,8 +6,7 @@ import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
-import useLocale from "../../state/useLocale";
-import { APIResponseType } from "../../types";
+import useLocale from "../../hooks/useLocale";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import { addDays, format } from "date-fns";
@@ -15,14 +14,15 @@ import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 import { userSessionAtom } from "../../state/users";
 import { taskAtom, tasksMapAtom } from "../../state/tasks";
-import { isLoadingAPI } from "../../state/app";
+import { isLoadingAPIAtom } from "../../state/app";
 import { TaskAtomType } from "../../types/tasks";
+import { useAPI } from "../../hooks/useAPI";
 
 const TaskDetails = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoadingAPI] = useAtom(isLoadingAPIAtom);
   const [userSession] = useAtom(userSessionAtom);
   const [task, setTask] = useAtom(taskAtom);
 
@@ -30,118 +30,75 @@ const TaskDetails = () => {
     return null;
   }
 
-  const completeTaskHandler = async () => {
-    setIsLoading(true);
+  const { runFetch } = useAPI<TaskAtomType>({ mode: "manual" });
 
+  const completeTaskHandler = async () => {
     const updatedStatus = {
       completed: !task.completed,
       completedAt: task.completed ? null : new Date(),
     };
 
-    const rawResponse = await fetch(
-      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedStatus),
-      }
-    );
-    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
+    const processSuccess = (data: TaskAtomType) => {
+      data.completed
+        ? toast.success(t.tasks.successCompleteTask)
+        : toast.success(t.tasks.successUncompleteTask);
 
-    if (res.success) {
-      toast.success(t.tasks.successCompleteTask);
-      setTask(res.data);
-    } else {
-      toast.error(`${t.tasks.errorCompleteTask} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      setTask(data);
+    };
 
-    setIsLoading(false);
+    await runFetch({
+      method: "PUT",
+      endpoint: `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      body: updatedStatus,
+      processSuccess,
+    });
   };
 
   const assignTaskHandler = async () => {
-    setIsLoading(true);
+    const updatedAssignee = { assignee: { connect: { id: userSession.id } } };
 
-    const updatedStatus = { assignee: { connect: { id: userSession.id } } };
-
-    const rawResponse = await fetch(
-      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedStatus),
-      }
-    );
-    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
-
-    if (res.success) {
+    const processSuccess = (data: TaskAtomType) => {
       toast.success(t.tasks.successAssignTask);
-      setTask(res.data); // TODO: fix refresh, as assignee is not included
-    } else {
-      toast.error(`${t.tasks.errorAssignTask} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      setTask(data);
+    };
 
-    setIsLoading(false);
+    await runFetch({
+      method: "PUT",
+      endpoint: `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      body: updatedAssignee,
+      processSuccess,
+    });
   };
 
   const rescheduleTaskHandler = async () => {
-    setIsLoading(true);
-
     const updatedDueDate = {
       dueDate: addDays(new Date(), 1),
     };
 
-    const rawResponse = await fetch(
-      `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedDueDate),
-      }
-    );
-    const res: APIResponseType<TaskAtomType> = await rawResponse.json();
-
-    if (res.success) {
+    const processSuccess = (data: TaskAtomType) => {
       toast.success(t.tasks.successRescheduleTask);
-      setTask(res.data);
-    } else {
-      toast.error(`${t.tasks.errorRescheduleTask} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      setTask(data);
+    };
 
-    setIsLoading(false);
+    await runFetch({
+      method: "PUT",
+      endpoint: `${ENDPOINTS.tasks}/updateTask?taskId=${task.id}`,
+      body: updatedDueDate,
+      processSuccess,
+    });
   };
 
   const deleteTaskHandler = async () => {
-    setIsLoading(true);
-
-    const rawResponse = await fetch(
-      `${ENDPOINTS.tasks}/deleteTaskById?taskId=${task.id}`,
-      {
-        method: "DELETE",
-      }
-    );
-    const res: APIResponseType = await rawResponse.json();
-
-    if (res.success) {
+    const processSuccess = () => {
       toast.success(t.tasks.successDeleteTask);
-    } else {
-      toast.error(`${t.tasks.errorDeleteTask} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      router.push(ROUTES.tasksList);
+    };
 
-    setIsLoading(false);
-    router.push(ROUTES.tasksList);
+    await runFetch({
+      method: "DELETE",
+      endpoint: `${ENDPOINTS.tasks}/deleteTaskById?taskId=${task.id}`,
+      processSuccess,
+    });
   };
 
   return (
@@ -162,14 +119,14 @@ const TaskDetails = () => {
       </section>
 
       <section className={styles.taskActions}>
-        <Button onClick={completeTaskHandler} isLoading={isLoading}>
+        <Button onClick={completeTaskHandler} isLoading={isLoadingAPI}>
           {task.completed ? t.tasks.uncompleteTask : t.tasks.completeTask}
         </Button>
 
         <Button
           onClick={assignTaskHandler}
           type="blue"
-          isLoading={isLoading}
+          isLoading={isLoadingAPI}
           disabled={task.assigneeId === userSession.id}
         >
           {t.tasks.assignToMe}
@@ -178,12 +135,12 @@ const TaskDetails = () => {
         <Button
           onClick={rescheduleTaskHandler}
           type="blue"
-          isLoading={isLoading}
+          isLoading={isLoadingAPI}
         >
           {t.tasks.rescheduleTaskTomorrow}
         </Button>
 
-        <Button onClick={deleteTaskHandler} type="red" isLoading={isLoading}>
+        <Button onClick={deleteTaskHandler} type="red" isLoading={isLoadingAPI}>
           {t.tasks.deleteTask}
         </Button>
       </section>
@@ -195,49 +152,39 @@ const TaskPage: NextPage = () => {
   const { t } = useLocale();
   const { query, isReady } = useRouter();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoading, setIsLoadingAPI] = useAtom(isLoadingAPIAtom);
   const [tasksMap] = useAtom(tasksMapAtom);
   const [task, setTask] = useAtom(taskAtom);
 
+  const processSuccess = (data: TaskAtomType) => {
+    setTask(data);
+    return;
+  };
+  const { runFetch } = useAPI<TaskAtomType>({ mode: "manual" });
+
   useEffect(() => {
-    setIsLoading(true);
-
-    const fetchTask = async () => {
-      const rawResponse = await fetch(
-        `${ENDPOINTS.tasks}/getTaskById?taskId=${taskId}`,
-        {
-          method: "GET",
-        }
-      );
-      const res: APIResponseType<TaskAtomType> = await rawResponse.json();
-
-      if (res.success) {
-        setTask(res.data);
-      } else {
-        setTask(undefined);
-        toast.error(`${t.tasks.errorLoadTasks} (${res.error_type})`);
-        console.error("error_type: ", res.error_type);
-      }
-
-      setIsLoading(false);
-      return;
-    };
+    setIsLoadingAPI(true);
 
     if (!isReady) {
-      return;
+      return; // TODO: Display some kind of error
     }
 
     const { taskId } = query;
     if (!taskId || Array.isArray(taskId)) {
-      setIsLoading(false);
-      return;
+      setIsLoadingAPI(false);
+      return; // TODO: Display some kind of error
     }
+
     const taskCached = tasksMap?.get(taskId);
     if (!taskCached) {
-      fetchTask();
+      runFetch({
+        endpoint: `${ENDPOINTS.tasks}/getTaskById?taskId=${taskId}`,
+        method: "GET",
+        processSuccess,
+      });
     } else {
       setTask(taskCached);
-      setIsLoading(false);
+      setIsLoadingAPI(false);
     }
 
     return;

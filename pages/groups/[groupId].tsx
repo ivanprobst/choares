@@ -6,27 +6,29 @@ import { useAtom } from "jotai";
 
 import styles from "../../styles/Home.module.css";
 import LayoutAuth from "../../components/LayoutAuth";
-import useLocale from "../../state/useLocale";
-import { APIResponseType } from "../../types";
+import useLocale from "../../hooks/useLocale";
 import { ENDPOINTS, LOCAL_STORAGE } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import BannerPageError from "../../components/BannerPageError";
 import Button from "../../components/Button";
 import { groupAtom, groupSessionAtom, groupsMapAtom } from "../../state/groups";
-import { isLoadingAPI } from "../../state/app";
+import { isLoadingAPIAtom } from "../../state/app";
 import { GroupAtomType } from "../../types/groups";
+import { useAPI } from "../../hooks/useAPI";
 
 const GroupDetails = () => {
   const { t } = useLocale();
 
   const [userEmail, setUserEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoading] = useAtom(isLoadingAPIAtom);
   const [group, setGroup] = useAtom(groupAtom);
   const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
 
   if (!group) {
     return null;
   }
+
+  const { runFetch } = useAPI<GroupAtomType>({ mode: "manual" });
 
   const isCurrentGroup = groupSession?.id === group.id;
 
@@ -37,32 +39,19 @@ const GroupDetails = () => {
   };
 
   const addMemberHandler = async () => {
-    setIsLoading(true);
-
     const updatedData = { userEmail };
 
-    const rawResponse = await fetch(
-      `${ENDPOINTS.groups}/addMemberToGroup?groupId=${group.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      }
-    );
-    const res: APIResponseType = await rawResponse.json();
-
-    if (res.success) {
+    const processSuccess = (data: GroupAtomType) => {
       toast.success(t.groups.successAddMember);
-      setGroup(res.data);
-    } else {
-      toast.error(`${t.groups.errorAddMember} (${res.error_type})`);
-      console.error("error_type: ", res.error_type);
-    }
+      setGroup(data);
+    };
 
-    setIsLoading(false);
+    await runFetch({
+      method: "PUT",
+      endpoint: `${ENDPOINTS.groups}/addMemberToGroup?groupId=${group.id}`,
+      body: updatedData,
+      processSuccess,
+    });
   };
 
   return (
@@ -120,49 +109,39 @@ const GroupPage: NextPage = () => {
   const { t } = useLocale();
   const { query, isReady } = useRouter();
 
-  const [isLoading, setIsLoading] = useAtom(isLoadingAPI);
+  const [isLoadingAPI, setIsLoadingAPI] = useAtom(isLoadingAPIAtom);
   const [groupsMap] = useAtom(groupsMapAtom);
   const [group, setGroup] = useAtom(groupAtom);
 
+  const processSuccess = (data: GroupAtomType) => {
+    setGroup(data);
+    return;
+  };
+  const { runFetch } = useAPI<GroupAtomType>({ mode: "manual" });
+
   useEffect(() => {
-    setIsLoading(true);
-
-    const fetchGroup = async () => {
-      const rawResponse = await fetch(
-        `${ENDPOINTS.groups}/getGroupById?groupId=${groupId}`,
-        {
-          method: "GET",
-        }
-      );
-      const res: APIResponseType<GroupAtomType> = await rawResponse.json();
-
-      if (res.success) {
-        setGroup(res.data);
-      } else {
-        setGroup(undefined);
-        toast.error(`${t.groups.errorLoadGroups} (${res.error_type})`);
-        console.error("error_type: ", res.error_type);
-      }
-
-      setIsLoading(false);
-      return;
-    };
+    setIsLoadingAPI(true);
 
     if (!isReady) {
-      return;
+      return; // TODO: Display some kind of error
     }
 
     const { groupId } = query;
     if (!groupId || Array.isArray(groupId)) {
-      setIsLoading(false);
-      return;
+      setIsLoadingAPI(false);
+      return; // TODO: Display some kind of error
     }
+
     const groupCached = groupsMap?.get(groupId);
     if (!groupCached) {
-      fetchGroup();
+      runFetch({
+        endpoint: `${ENDPOINTS.groups}/getGroupById?groupId=${groupId}`,
+        method: "GET",
+        processSuccess,
+      });
     } else {
       setGroup(groupCached);
-      setIsLoading(false);
+      setIsLoadingAPI(false);
     }
 
     return;
@@ -170,7 +149,7 @@ const GroupPage: NextPage = () => {
 
   return (
     <LayoutAuth>
-      {isLoading ? (
+      {isLoadingAPI ? (
         <Spinner />
       ) : !group ? (
         <BannerPageError />
