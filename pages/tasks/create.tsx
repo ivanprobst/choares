@@ -6,7 +6,7 @@ import { format, addDays } from "date-fns";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/Form.module.scss";
 import useLocale from "../../hooks/useLocale";
 import { RecurringType } from "../../types/tasks";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useAtom } from "jotai";
 
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/Tasks.module.scss";
 import LayoutAuth from "../../components/LayoutAuth";
 import useLocale from "../../hooks/useLocale";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";

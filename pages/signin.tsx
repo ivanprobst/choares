@@ -1,7 +1,7 @@
 import React from "react";
 import { signIn, useSession } from "next-auth/react";
 
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Layout.module.scss";
 import Button from "../components/Button";
 import Head from "next/head";
 import useLocale from "../hooks/useLocale";

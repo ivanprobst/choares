@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";

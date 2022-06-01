@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/Form.module.scss";
 import useLocale from "../../hooks/useLocale";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Button from "../../components/Button";

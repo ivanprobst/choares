@@ -5,7 +5,7 @@ import { format, isToday } from "date-fns";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/Tasks.module.scss";
 import useLocale from "../../hooks/useLocale";
 import { TaskFilterWhenType, TaskFilterWhoType } from "../../types/tasks";
 import Spinner from "../../components/Spinner";

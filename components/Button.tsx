@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Form.module.scss";
 import Spinner from "./Spinner";
 
 const Button = ({

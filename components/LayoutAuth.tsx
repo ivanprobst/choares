@@ -4,7 +4,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useAtom } from "jotai";
 
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Layout.module.scss";
 import useLocale from "../hooks/useLocale";
 import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../utils/constants";
 import Spinner from "./Spinner";

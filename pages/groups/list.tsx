@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/Groups.module.scss";
 import useLocale from "../../hooks/useLocale";
 import { ENDPOINTS, ROUTES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
