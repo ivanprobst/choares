@@ -4,7 +4,6 @@
 .tasksListItem {
   margin-bottom: 1rem;
   padding: 0.8rem 0.8rem;
-  color: colors.$thirdary;
   border: 1px solid colors.$secondary;
   border-radius: 5px;
   background: colors.$fourth;
@@ -70,8 +69,6 @@
 }
 
 .taskActions {
-  padding: 0 2rem;
-
   button {
     margin-bottom: 1rem;
   }

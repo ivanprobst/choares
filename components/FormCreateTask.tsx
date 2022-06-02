@@ -116,9 +116,7 @@ export const FormCreateTask = () => {
       )}
 
       <div className={styles.formInputBlock}>
-        <label className={styles.label} htmlFor="task-assignee">
-          {t.tasks.taskLabelAssignee}
-        </label>
+        <label htmlFor="task-assignee">{t.tasks.taskLabelAssignee}</label>
         <select
           id="task-assignee"
           value={assigneeId}

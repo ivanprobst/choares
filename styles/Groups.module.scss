@@ -1,12 +1,45 @@
-.groupList {
-    margin: 1rem 0;
-  }  
-.groupItem {
+@use "colors";
+@use "fonts";
+
+.groupListItem {
   margin-bottom: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem 0.8rem;
+  border: 1px solid colors.$secondary;
+  border-radius: 5px;
+  background: colors.$fourth;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    background: colors.$fifth;
+    border: 1px solid colors.$secondary-dark;
+  }
+
+  h3 {
+    margin-bottom: 0.3rem;
+  }
+
+  p {
+    font-size: fonts.$smallest;
+  }
 }
-.groupMembers {
-  font-style: italic;
-}
+
 .groupDetails {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+
+  h2 {
+    margin-bottom: 0.5rem;
+    font-size: fonts.$bigger;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.groupActions {
+  button {
+    margin-bottom: 1rem;
+  }
 }
