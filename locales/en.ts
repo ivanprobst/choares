@@ -44,6 +44,7 @@ export const en = {
     successRescheduleTask: "Task scheduled for tomorrow",
   },
   groups: {
+    group: "Group",
     title: "Groups",
     backGroupList: "Back to groups list",
     members: "Members",

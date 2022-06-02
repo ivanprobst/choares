@@ -1,7 +1,6 @@
 import { useEffect, ReactNode } from "react";
-import Head from "next/head";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useAtom } from "jotai";
 
 import styles from "../styles/Layout.module.scss";
@@ -14,6 +13,8 @@ import toast from "react-hot-toast";
 import { userSessionAtom } from "../state/users";
 import { groupSessionAtom } from "../state/groups";
 import { GroupAtomType } from "../types/groups";
+import { IconAdd } from "../icons/IconAdd";
+import { IconSettings } from "../icons/IconSettings";
 
 const getCurrentGroup = async () => {
   const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
@@ -74,7 +75,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
         email: session.user.email,
       });
     }
-  }, [session?.user]);
+  }, [session?.user, setUserSession]);
 
   const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
   useEffect(() => {
@@ -97,7 +98,7 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     };
 
     initCurrentGroupdId();
-  }, [t]);
+  }, [t, setGroupSession]);
 
   if (status === "loading") {
     return <Spinner />;
@@ -106,42 +107,33 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <div className={styles.container}>
-        <Head>
-          <title>
-            {t.common.choares} — {t.common.description}
-          </title>
-          <meta name="description" content={t.common.description} />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-
         <header className={styles.header}>
-          <h1 className={styles.title}>
+          <h1>
             <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
           </h1>
-          <nav className={styles.nav}>
-            <Link href={ROUTES.tasksList}>{t.tasks.tasksList}</Link>
-            <Link href={ROUTES.tasksCreate}>{t.tasks.createTaskMenu}</Link>
-          </nav>
+
+          <div className={styles.actionContainer}>
+            <Link href={ROUTES.tasksCreate}>
+              <a>
+                <IconAdd />
+              </a>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>{children}</main>
 
         <footer className={styles.footer}>
-          <p>{t.about.copyright}</p>
-          <nav className={styles.nav}>
-            <div>
-              <Link href={ROUTES.groups}>{t.groups.title}</Link>
-              {` (${t.common.current}: ${groupSession?.name})`}
-            </div>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                signOut();
-              }}
-            >
-              {t.common.signout}
-            </a>
+          <p className={styles.groupContainer}>
+            {`${t.groups.group}: ${groupSession?.name}`}
+          </p>
+
+          <nav>
+            <Link href={ROUTES.settings}>
+              <a>
+                <IconSettings />
+              </a>
+            </Link>
           </nav>
         </footer>
       </div>

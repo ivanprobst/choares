@@ -1,67 +1,82 @@
+@use "colors";
+@use "fonts";
+
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* TODO: ensure the min height is OK */
-    width: min(100%, 800px);
-    margin: auto;
-    background: var(--color-gray-dark);
-  }
-  
-  .header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-bottom: 2px solid var(--color-pink-light);
-  }
-  .title {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: min(100%, 800px);
+  margin: auto;
+  background: colors.$primary;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 0.5px solid colors.$secondary;
+
+  h1 {
     flex: 1;
     margin: 0;
-    font-size: var(--font-size-biggest);
-    color: var(--color-primary);
+    font-size: fonts.$biggest;
+    color: colors.$secondary;
+
+    a {
+      text-decoration: none;
+    }
   }
-  .title a {
-    text-decoration: none;
+
+  // TODO: make it generic for all icons
+  .actionContainer a {
+    &:active {
+      color: darken(colors.$secondary, 20%);
+    }
   }
-  
-  .pageTitle {
-    margin-bottom: 1rem;
-    font-size: var(--font-size-big);
+}
+
+.main {
+  flex-grow: 1;
+  padding: 1rem 1rem;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-top: 0.5px solid colors.$secondary;
+
+  .groupContainer {
+    flex: 1;
   }
-  
-  .main {
-    width: 100%;
-    flex-grow: 1;
-    padding: 1rem 2rem;
-  }
-  
-  .footer {
-    display: flex;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-top: 2px solid var(--color-pink-light);
-  }
-  .nav {
-    margin-left: auto;
+
+  nav {
     display: flex;
     justify-content: flex-end;
     align-content: center;
     gap: 0.5rem;
-  }
 
-  .authGuardianContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    a {
+      display: flex;
+      align-content: center;
+
+      &:active {
+        color: darken(colors.$secondary, 20%);
+      }
+    }
   }
-    .authGuardianContainer h2 {
-      font-size: var(--font-size-biggest);
-      margin-bottom: 1rem;
-    }
-    .authGuardianContainer h3 {
-      margin-bottom: 1rem;
-      font-size: var(--font-size-normal);
-    }
+}
+
+.authGuardianContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.authGuardianContainer h2 {
+  font-size: var(--font-size-biggest);
+  margin-bottom: 1rem;
+}
+.authGuardianContainer h3 {
+  margin-bottom: 1rem;
+  font-size: var(--font-size-normal);
+}

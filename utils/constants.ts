@@ -9,6 +9,7 @@ export const ENDPOINTS = {
 
 export const ROUTES = {
   home: "/",
+  settings: "/settings",
   signin: "/signin",
   task: "/tasks",
   tasksList: "/tasks/list",
