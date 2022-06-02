@@ -1,24 +1,23 @@
-.tabsContainerGroup {
-    display: flex;
-  }
-  .tabsContainer {
-    display: flex;
-    margin-bottom: 1rem;
-  }
-    .tabsContainer:first-child {
-      flex: 1;
-    }
-  .tab {
-    padding: 0 0.5rem;
-    border: none;
-    background: none;
-    font-size: var(--font-size-normal);
-    color: white;
-    cursor: pointer;
-  }
-    .tab:not(:last-child) {
-      border-right: 1px solid white;
-    }
-    .tabCurrent {
-      text-decoration: underline;
-    }
+@use "colors";
+
+.tabsContainer {
+  display: flex;
+  margin-bottom: 1rem;
+}
+.tabsContainer:first-child {
+  flex: 1;
+}
+.tab {
+  padding: 0 0.5rem;
+  border: none;
+  background: none;
+  font-size: var(--font-size-normal);
+  color: colors.$thirdary;
+  cursor: pointer;
+}
+.tab:not(:last-child) {
+  border-right: 1px solid white;
+}
+.tabCurrent {
+  text-decoration: underline;
+}

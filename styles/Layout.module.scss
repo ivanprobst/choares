@@ -15,6 +15,7 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border-bottom: 0.5px solid colors.$secondary;
+  background: colors.$fifth;
 
   h1 {
     flex: 1;
@@ -29,6 +30,9 @@
 
   // TODO: make it generic for all icons
   .actionContainer a {
+    display: flex;
+    align-content: center;
+
     &:active {
       color: darken(colors.$secondary, 20%);
     }
@@ -45,6 +49,7 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border-top: 0.5px solid colors.$secondary;
+  background: colors.$fifth;
 
   .groupContainer {
     flex: 1;
@@ -61,7 +66,7 @@
       align-content: center;
 
       &:active {
-        color: darken(colors.$secondary, 20%);
+        color: colors.$secondary-dark;
       }
     }
   }

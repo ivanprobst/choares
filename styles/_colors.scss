@@ -1,2 +1,17 @@
 $primary: #d8dee9;
 $secondary: #5e81ac;
+$secondary-dark: darken($secondary, 20%);
+$thirdary: #4c566a;
+$thirdary-light: lighten($thirdary, 30%);
+$fourth: #eceff4;
+$fifth: #e5e9f0;
+
+$green: #a3be8c;
+$green-light: lighten($green, 30%);
+$green-dark: darken($green, 20%);
+$red: lighten(#bf616a, 10%);
+$red-light: lighten($red, 30%);
+$red-dark: darken($red, 20%);
+$blue: #88c0d0;
+$blue-light: lighten($blue, 30%);
+$blue-dark: darken($blue, 20%);

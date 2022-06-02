@@ -24,7 +24,7 @@ const Button = ({
 
   return (
     <button
-      className={`${styles.button} ${buttonStyle}`}
+      className={buttonStyle}
       onClick={onClick}
       disabled={isLoading || disabled}
     >
