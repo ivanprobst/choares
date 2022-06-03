@@ -17,7 +17,7 @@ const HomePage: NextPage = () => {
 
   return (
     <LayoutDefault>
-      <section className={styles.signinContainer}>
+      <section className={styles.genericContainer}>
         <h2>{t.common.choaresTitle}</h2>
         <p>{t.common.choaresSubtitle}</p>
         {status === "loading" ? (

@@ -1,4 +1,4 @@
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useAtom } from "jotai";
@@ -9,55 +9,38 @@ import { ENDPOINTS, LOCAL_STORAGE, ROUTES } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useRouter } from "next/router";
 import { APIResponseType } from "../types";
-import toast from "react-hot-toast";
 import { userSessionAtom } from "../state/users";
 import { groupSessionAtom } from "../state/groups";
 import { GroupAtomType } from "../types/groups";
 import { IconAdd } from "../icons/IconAdd";
 import { IconSettings } from "../icons/IconSettings";
+import Button from "./Button";
+import { isLoadingAPIAtom } from "../state/app";
 
-const getCurrentGroup = async () => {
-  const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
-
-  if (currentGroupId) {
-    const response = await fetch(
-      `${ENDPOINTS.groups}/getGroupById?groupId=${currentGroupId}`,
-      {
-        method: "GET",
-      }
-    );
-    const responseJSON: APIResponseType<GroupAtomType> = await response.json();
-
-    if (!responseJSON.success) {
-      return { success: false, error_type: responseJSON.error_type };
-    }
-
-    return { success: true, group: responseJSON.data };
-  } else {
-    const response = await fetch(
-      `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
-      {
-        method: "GET",
-      }
-    );
-    const responseJSON: APIResponseType<Array<GroupAtomType>> =
-      await response.json();
-
-    if (!responseJSON.success) {
-      return { success: false, error_type: responseJSON.error_type };
-    }
-
-    if (responseJSON.data.length === 0) {
-      return { success: false, error_type: "no_group_found" };
-    }
-
-    return { success: true, group: responseJSON.data[0] };
-  }
+const GroupErrorOverlay = () => {
+  const { t } = useLocale();
+  const router = useRouter();
+  return (
+    <div className={styles.genericContainer}>
+      <h2>{t.groups.notInGroup}</h2>
+      <p>{t.groups.infoMustCreateGroup}</p>
+      <Button onClick={() => router.push(ROUTES.groupsCreate)} type="blue">
+        {t.groups.createGroupButton}
+      </Button>
+    </div>
+  );
 };
 
 const LayoutAuth = ({ children }: { children: ReactNode }) => {
   const { t } = useLocale();
+  const [isLoadingAPI, setIsLoadingAPI] = useAtom(isLoadingAPIAtom);
+
   const router = useRouter();
+  const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
+  const [, setUserSession] = useAtom(userSessionAtom);
+
+  const displayGroupError =
+    !groupSession && router.pathname !== ROUTES.groupsCreate;
 
   const { data: session, status } = useSession({
     required: true,
@@ -67,7 +50,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const [, setUserSession] = useAtom(userSessionAtom);
   useEffect(() => {
     if (session?.user) {
       setUserSession({
@@ -78,15 +60,55 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     }
   }, [session?.user, setUserSession]);
 
-  const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
+  const getCurrentGroup = useCallback(async () => {
+    const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
+
+    if (currentGroupId) {
+      setIsLoadingAPI(true);
+      const response = await fetch(
+        `${ENDPOINTS.groups}/getGroupById?groupId=${currentGroupId}`,
+        {
+          method: "GET",
+        }
+      );
+      const responseJSON: APIResponseType<GroupAtomType> =
+        await response.json();
+      setIsLoadingAPI(false);
+
+      if (!responseJSON.success) {
+        return { success: false, error_type: responseJSON.error_type };
+      }
+
+      return { success: true, group: responseJSON.data };
+    } else {
+      setIsLoadingAPI(true);
+      const response = await fetch(
+        `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
+        {
+          method: "GET",
+        }
+      );
+      const responseJSON: APIResponseType<Array<GroupAtomType>> =
+        await response.json();
+      setIsLoadingAPI(false);
+
+      if (!responseJSON.success) {
+        return { success: false, error_type: responseJSON.error_type };
+      }
+
+      if (responseJSON.data.length === 0) {
+        return { success: false, error_type: "no_group_found" };
+      }
+
+      return { success: true, group: responseJSON.data[0] };
+    }
+  }, [setIsLoadingAPI]);
+
   useEffect(() => {
     const initCurrentGroupdId = async () => {
-      const { success, error_type, group } = await getCurrentGroup();
+      const { success, group } = await getCurrentGroup();
 
       if (!success || !group) {
-        // TODO: entire system fails in this case, bring to error page
-        toast.error(`${t.groups.errorNoGroup} (${error_type})`);
-        console.error(`error_type: ${error_type}`);
         return;
       }
 
@@ -98,12 +120,12 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       });
     };
 
-    if (status !== "loading" && session) {
+    if (status !== "loading" && session && !groupSession) {
       initCurrentGroupdId();
     }
-  }, [t, setGroupSession, status, session]);
+  }, [status, session, setGroupSession, getCurrentGroup, t, groupSession]);
 
-  if (status === "loading") {
+  if (status === "loading" || isLoadingAPI) {
     return <Spinner />;
   }
 
@@ -123,11 +145,15 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
         </div>
       </header>
 
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main}>
+        {displayGroupError ? <GroupErrorOverlay /> : children}
+      </main>
 
       <footer className={styles.footer}>
         <p className={styles.groupContainer}>
-          {`${t.groups.group}: ${groupSession?.name}`}
+          {`${t.groups.group}: ${
+            groupSession?.name ? groupSession.name : t.groups.notInGroup
+          }`}
         </p>
 
         <nav>

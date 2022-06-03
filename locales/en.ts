@@ -60,8 +60,10 @@ export const en = {
     createGroupButton: "Create a new group",
     switchGroupButton: "Switch to this group",
     alreadyCurrentGroup: "Already current group",
-    notInGroup: "You are not part of any group",
+    notInGroup: "No group found",
     noMembers: "No members added",
+    infoMustCreateGroup:
+      "Please create a new group, or get invited in an existing group",
     successGroupCreated: "Group created",
     successAddMember: "Member added",
     successGroupSwitch: "Group switched to",

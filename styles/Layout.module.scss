@@ -75,15 +75,11 @@
   }
 }
 
-.signinContainer {
+.genericContainer {
+  width: 100%;
   margin: auto 0;
   align-self: center;
   text-align: center;
-
-  h2 {
-    font-size: fonts.$bigger;
-    margin-bottom: 0.5rem;
-  }
 
   p {
     margin-bottom: 1rem;
