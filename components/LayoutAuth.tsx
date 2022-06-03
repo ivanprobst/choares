@@ -1,4 +1,4 @@
-import { useEffect, ReactNode, useCallback } from "react";
+import { useEffect, ReactNode, useCallback, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useAtom } from "jotai";
@@ -15,7 +15,6 @@ import { GroupAtomType } from "../types/groups";
 import { IconAdd } from "../icons/IconAdd";
 import { IconSettings } from "../icons/IconSettings";
 import Button from "./Button";
-import { isLoadingAPIAtom } from "../state/app";
 
 const GroupErrorOverlay = () => {
   const { t } = useLocale();
@@ -33,15 +32,11 @@ const GroupErrorOverlay = () => {
 
 const LayoutAuth = ({ children }: { children: ReactNode }) => {
   const { t } = useLocale();
-  const [isLoadingAPI, setIsLoadingAPI] = useAtom(isLoadingAPIAtom);
-
   const router = useRouter();
+
+  const [isLoadingSession, setIsLoadingSession] = useState<boolean>(true);
   const [groupSession, setGroupSession] = useAtom(groupSessionAtom);
   const [, setUserSession] = useAtom(userSessionAtom);
-
-  const displayGroupError =
-    !groupSession && router.pathname !== ROUTES.groupsCreate;
-
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -49,6 +44,9 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       return;
     },
   });
+
+  const displayGroupError =
+    !groupSession && router.pathname !== ROUTES.groupsCreate;
 
   useEffect(() => {
     if (session?.user) {
@@ -64,7 +62,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
     const currentGroupId = localStorage.getItem(LOCAL_STORAGE.groupId);
 
     if (currentGroupId) {
-      setIsLoadingAPI(true);
       const response = await fetch(
         `${ENDPOINTS.groups}/getGroupById?groupId=${currentGroupId}`,
         {
@@ -73,7 +70,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       );
       const responseJSON: APIResponseType<GroupAtomType> =
         await response.json();
-      setIsLoadingAPI(false);
 
       if (!responseJSON.success) {
         return { success: false, error_type: responseJSON.error_type };
@@ -81,7 +77,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
 
       return { success: true, group: responseJSON.data };
     } else {
-      setIsLoadingAPI(true);
       const response = await fetch(
         `${ENDPOINTS.groups}/getAllGroupsBySessionUserId`,
         {
@@ -90,7 +85,6 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       );
       const responseJSON: APIResponseType<Array<GroupAtomType>> =
         await response.json();
-      setIsLoadingAPI(false);
 
       if (!responseJSON.success) {
         return { success: false, error_type: responseJSON.error_type };
@@ -102,11 +96,12 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
 
       return { success: true, group: responseJSON.data[0] };
     }
-  }, [setIsLoadingAPI]);
+  }, []);
 
   useEffect(() => {
-    const initCurrentGroupdId = async () => {
+    const initGroupSession = async () => {
       const { success, group } = await getCurrentGroup();
+      setIsLoadingSession(false);
 
       if (!success || !group) {
         return;
@@ -120,13 +115,24 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       });
     };
 
-    if (status !== "loading" && session && !groupSession) {
-      initCurrentGroupdId();
+    if (groupSession) {
+      setIsLoadingSession(false);
+      return;
     }
+
+    if (status === "loading" || !session) {
+      return;
+    }
+
+    initGroupSession();
   }, [status, session, setGroupSession, getCurrentGroup, t, groupSession]);
 
-  if (status === "loading" || isLoadingAPI) {
-    return <Spinner />;
+  if (status === "loading" || isLoadingSession) {
+    return (
+      <div className={styles.fullscreenContainer}>
+        <Spinner />
+      </div>
+    );
   }
 
   return (
