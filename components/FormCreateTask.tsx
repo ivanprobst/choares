@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { format, addDays } from "date-fns";
 import { useAtom } from "jotai";
+import DatePicker from "react-datepicker";
 
 import styles from "../styles/Form.module.scss";
 import useLocale from "../hooks/useLocale";
@@ -13,6 +14,8 @@ import { groupSessionAtom } from "../state/groups";
 import { isLoadingAPIAtom } from "../state/app";
 import { useAPI } from "../hooks/useAPI";
 
+import "react-datepicker/dist/react-datepicker.css";
+
 export const FormCreateTask = () => {
   const { t } = useLocale();
   const router = useRouter();
@@ -21,9 +24,7 @@ export const FormCreateTask = () => {
   const [groupSession] = useAtom(groupSessionAtom);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState(
-    format(addDays(new Date(), 1), "yyyy-MM-dd")
-  );
+  const [dueDate, setDueDate] = useState(addDays(new Date(), 1));
   const [assigneeId, setAssigneeId] = useState("");
   const [recurring, setRecurring] = useState<RecurringType | "">("");
 
@@ -31,12 +32,14 @@ export const FormCreateTask = () => {
 
   const { runFetch } = useAPI({ mode: "manual" });
 
+  console.log("duedate2: ", dueDate);
+
   const createTaskHandler = async () => {
     const taskData = {
       groupId: groupSession?.id,
       name: name || null,
       description: description || null,
-      dueDate: new Date(dueDate) || null,
+      dueDate: dueDate || null,
       recurring: recurring || null,
       assigneeId: assigneeId || null,
     };
@@ -85,13 +88,9 @@ export const FormCreateTask = () => {
 
       <div className={styles.formInputBlock}>
         <label htmlFor="task-date">{t.tasks.taskLabelDueDate}</label>
-        <input
-          id="task-date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          type="date"
-          placeholder={t.tasks.taskLabelDueDate}
-          disabled={isLoadingAPI}
+        <DatePicker
+          selected={dueDate}
+          onChange={(date: Date) => setDueDate(date)}
         />
       </div>
 
@@ -106,10 +105,10 @@ export const FormCreateTask = () => {
           >
             <option value="">No</option>
             <option value="weekly">
-              Every week on {format(new Date(dueDate), "EEEE")}
+              Every week on {format(dueDate, "EEEE")}
             </option>
             <option value="monthly">
-              Every month on the {format(new Date(dueDate), "do")}
+              Every month on the {format(dueDate, "do")}
             </option>
           </select>
         </div>
