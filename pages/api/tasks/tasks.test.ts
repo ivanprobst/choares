@@ -29,8 +29,6 @@ const mockResponse = () => {
 describe("the API /tasks...", () => {
   let res: NextApiResponse;
 
-  beforeAll(async () => {});
-
   beforeEach(async () => {
     jest
       .spyOn(moduleNextAuth, "getSession")
@@ -43,8 +41,6 @@ describe("the API /tasks...", () => {
   afterEach(async () => {
     jest.clearAllMocks();
   });
-
-  afterAll(async () => {});
 
   // TODO: add test for recurring create
   describe("handles createTask requests, and...", () => {
@@ -87,7 +83,7 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "create")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "taskId" }));
 
       await createTask(req, res);
@@ -116,7 +112,7 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve(null));
 
       await deleteTaskById(req, res);
@@ -133,12 +129,12 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "taskId" }));
 
       jest
         .spyOn(prisma.task, "delete")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "taskId" }));
 
       await deleteTaskById(req, res);
@@ -166,7 +162,7 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "findMany")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve(["task1", "task2"]));
 
       await getAllTasksByGroupId(req, res);
@@ -197,7 +193,7 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "task1" }));
 
       await getTaskById(req, res);
@@ -242,7 +238,7 @@ describe("the API /tasks...", () => {
 
       jest
         .spyOn(prisma.task, "update")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "taskId" }));
 
       await updateTask(req, res);

@@ -28,8 +28,6 @@ const mockResponse = () => {
 describe("the API /groups...", () => {
   let res: NextApiResponse;
 
-  beforeAll(async () => {});
-
   beforeEach(async () => {
     jest
       .spyOn(moduleNextAuth, "getSession")
@@ -43,15 +41,13 @@ describe("the API /groups...", () => {
     jest.clearAllMocks();
   });
 
-  afterAll(async () => {});
-
   describe("handles getAllGroupsBySessionUserId requests, and...", () => {
     it("should succeed if all is valid", async () => {
       const req = mockRequest("GET");
 
       jest
         .spyOn(prisma.group, "findMany")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve(["group1", "group2"]));
 
       await getAllGroupsBySessionUserId(req, res);
@@ -82,7 +78,7 @@ describe("the API /groups...", () => {
 
       jest
         .spyOn(prisma.group, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "group1" }));
 
       await getGroupById(req, res);
@@ -133,7 +129,7 @@ describe("the API /groups...", () => {
 
       jest
         .spyOn(prisma.group, "create")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "groupId" }));
 
       await createGroup(req, res);
@@ -178,7 +174,7 @@ describe("the API /groups...", () => {
 
       jest
         .spyOn(prisma.user, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve(null));
 
       await addMemberToGroup(req, res);
@@ -196,12 +192,12 @@ describe("the API /groups...", () => {
 
       jest
         .spyOn(prisma.user, "findUnique")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "userId" }));
 
       jest
         .spyOn(prisma.group, "update")
-        // @ts-ignore
+        // @ts-expect-error actually works as expected
         .mockImplementation(() => Promise.resolve({ id: "groupId" }));
 
       await addMemberToGroup(req, res);
