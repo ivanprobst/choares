@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Tab.module.scss";
 
 export const TabsContainer = ({ children }: { children: React.ReactNode }) => {
   return <div className={styles.tabsContainer}>{children}</div>;

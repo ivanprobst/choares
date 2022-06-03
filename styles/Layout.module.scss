@@ -1,0 +1,91 @@
+@use "colors";
+@use "fonts";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: min(100%, 800px);
+  margin: auto;
+  background: colors.$primary;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 0.5px solid colors.$secondary;
+  background: colors.$fifth;
+
+  h1 {
+    flex: 1;
+    margin: 0;
+    font-size: fonts.$biggest;
+    color: colors.$secondary;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  // TODO: make it generic for all icons
+  .actionContainer a {
+    display: flex;
+    align-content: center;
+
+    &:active {
+      color: darken(colors.$secondary, 20%);
+    }
+  }
+}
+
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem;
+  color: colors.$thirdary;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-top: 0.5px solid colors.$secondary;
+  background: colors.$fifth;
+
+  .groupContainer {
+    flex: 1;
+  }
+
+  nav {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    gap: 0.5rem;
+
+    a {
+      display: flex;
+      align-content: center;
+
+      &:active {
+        color: colors.$secondary-dark;
+      }
+    }
+  }
+}
+
+.signinContainer {
+  margin: auto 0;
+  align-self: center;
+  text-align: center;
+
+  h2 {
+    font-size: fonts.$bigger;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+}

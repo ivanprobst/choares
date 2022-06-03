@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Form.module.scss";
 import Spinner from "./Spinner";
 
 const Button = ({
@@ -24,7 +24,7 @@ const Button = ({
 
   return (
     <button
-      className={`${styles.button} ${buttonStyle}`}
+      className={buttonStyle}
       onClick={onClick}
       disabled={isLoading || disabled}
     >

@@ -1,0 +1,75 @@
+@use "colors";
+@use "fonts";
+
+.tasksListItem {
+  margin-bottom: 1rem;
+  padding: 0.8rem 0.8rem;
+  border: 1px solid colors.$secondary;
+  border-radius: 5px;
+  background: colors.$fourth;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    background: colors.$fifth;
+    border: 1px solid colors.$secondary-dark;
+  }
+
+  h3 {
+    margin-bottom: 0.3rem;
+  }
+
+  .dueDate {
+    display: flex;
+    align-items: center;
+    font-size: fonts.$smallest;
+
+    &:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
+
+    svg {
+      margin-left: -0.5rem;
+      margin-right: 0.2rem;
+    }
+  }
+
+  .description {
+    // TODO: check if cleaner way to do this
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.taskDetails {
+  margin-bottom: 2rem;
+
+  h2 {
+    margin-bottom: 0.5rem;
+    font-size: fonts.$bigger;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+
+  .dueDate {
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: -0.5rem;
+      margin-right: 0.2rem;
+    }
+  }
+}
+
+.taskActions {
+  button {
+    margin-bottom: 1rem;
+  }
+}

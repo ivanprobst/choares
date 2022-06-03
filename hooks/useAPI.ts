@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useAtom } from "jotai";
 import toast from "react-hot-toast";
 
@@ -67,9 +67,12 @@ export const useAPI = <DataReturnType = undefined>({
     return;
   }, [endpoint]);
 
-  const runFetch = async (props: Omit<APIoptions<DataReturnType>, "mode">) => {
-    return await executeFetch(props);
-  };
+  const runFetch = useCallback(
+    async (props: Omit<APIoptions<DataReturnType>, "mode">) => {
+      return await executeFetch(props);
+    },
+    []
+  );
 
   return { runFetch };
 };

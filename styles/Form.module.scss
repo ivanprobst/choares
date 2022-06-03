@@ -1,0 +1,83 @@
+@use "colors";
+@use "fonts";
+
+.formInputBlock {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  textarea,
+  input,
+  select {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid colors.$secondary;
+    border-radius: 5px;
+    background: colors.$fourth;
+    font-family: inherit;
+    font-size: inherit;
+
+    &:disabled {
+      background: colors.$fifth;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: none; // TODO: see if scrolling works well for description field
+  }
+}
+
+@mixin button {
+  width: 100%;
+  padding: 1rem;
+  color: colors.$thirdary;
+  border-radius: 5px;
+  font-size: fonts.$bigger;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    color: colors.$thirdary-light;
+    cursor: not-allowed;
+  }
+}
+.buttonGreen {
+  @include button;
+  background: colors.$green;
+  border: 1px solid colors.$green-dark;
+
+  &:active {
+    background: colors.$green-dark;
+  }
+  &:disabled {
+    background: colors.$green-light;
+  }
+}
+.buttonRed {
+  @include button;
+  background: colors.$red;
+  border: 1px solid colors.$red-dark;
+
+  &:active {
+    background: colors.$red-dark;
+  }
+  &:disabled {
+    background: colors.$red-light;
+  }
+}
+.buttonBlue {
+  @include button;
+  background: colors.$blue;
+  border: 1px solid colors.$blue-dark;
+
+  &:active {
+    background: colors.$blue-dark;
+  }
+  &:disabled {
+    background: colors.$blue-light;
+  }
+}

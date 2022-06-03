@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { format, isToday } from "date-fns";
+import { isToday } from "date-fns";
 import { useAtom } from "jotai";
 
 import LayoutAuth from "../../components/LayoutAuth";
-import styles from "../../styles/Home.module.css";
-import useLocale from "../../hooks/useLocale";
 import { TaskFilterWhenType, TaskFilterWhoType } from "../../types/tasks";
 import Spinner from "../../components/Spinner";
-import { ENDPOINTS, ROUTES } from "../../utils/constants";
+import { ENDPOINTS } from "../../utils/constants";
 import { Tab, TabsContainer } from "../../components/Tab";
 import BannerPageError from "../../components/BannerPageError";
 import { isLoadingAPIAtom } from "../../state/app";
@@ -22,42 +19,7 @@ import {
 } from "../../state/tasks";
 import { TaskAtomType } from "../../types/tasks";
 import { useAPI } from "../../hooks/useAPI";
-
-const TaskItem = ({ task }: { task: TaskAtomType }) => {
-  const { t } = useLocale();
-  const router = useRouter();
-
-  const openTaskHandler = () => {
-    router.push(`${ROUTES.task}/${task.id}`);
-  };
-
-  return (
-    <li
-      className={styles.tasksListItem}
-      key={task.id}
-      onClick={openTaskHandler}
-    >
-      <div>
-        <h3 className={styles.tasksListName}>{task.name}</h3>
-        <p>
-          {task.assigneeId
-            ? `Assigned to ${task.assigneeId.slice(-4)}`
-            : "No one assigned"}
-        </p>
-        <p className={styles.tasksListDueDate}>
-          {`${t.tasks.dueBy}: ${
-            task.dueDate ? format(new Date(task.dueDate), "MMM d, y") : "-"
-          }`}
-        </p>
-      </div>
-      <div className={styles.tasksListConfirmation}>
-        {/* <Button type="blue" onClick={taskCompletionHandler}>
-          {t.tasks.taskCompleted}
-        </Button> */}
-      </div>
-    </li>
-  );
-};
+import { TaskListItem } from "../../components/TaskListItem";
 
 const TasksListFilters = () => {
   const [userSession] = useAtom(userSessionAtom);
@@ -96,11 +58,18 @@ const TasksListFilters = () => {
       : [];
 
     setTasksFiltered(filteredTasks);
-  }, [tasksList, taskFilterWhen, taskFilterWho, taskFilterIsCompleted]);
+  }, [
+    tasksList,
+    taskFilterWhen,
+    taskFilterWho,
+    taskFilterIsCompleted,
+    setTasksFiltered,
+    userSession.id,
+  ]);
 
   return (
     <>
-      <div className={styles.tabsContainerGroup}>
+      <div>
         <TabsContainer>
           <Tab
             onClick={() => setTaskFilterWhen(TaskFilterWhenType.today)}
@@ -162,9 +131,9 @@ const TasksList = () => {
       {!tasksListFiltered ? (
         <BannerPageError />
       ) : (
-        <ul className={styles.tasksList}>
+        <ul>
           {tasksListFiltered.map((task) => (
-            <TaskItem key={task.id} task={task}></TaskItem>
+            <TaskListItem key={task.id} task={task}></TaskListItem>
           ))}
         </ul>
       )}
@@ -173,8 +142,6 @@ const TasksList = () => {
 };
 
 const TasksPage: NextPage = () => {
-  const { t } = useLocale();
-
   const [isLoading] = useAtom(isLoadingAPIAtom);
   const [groupSession] = useAtom(groupSessionAtom);
   const [, setTasksList] = useAtom(tasksMapAtom);
