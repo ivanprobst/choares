@@ -21,7 +21,7 @@
     font-size: inherit;
 
     &:disabled {
-      background: var(--color-gray-light);
+      background: colors.$fifth;
       cursor: not-allowed;
     }
   }

@@ -5,14 +5,18 @@ export const en = {
     choaresSubtitle: "Get your home chores done, together.",
     description: "Your home chores, shared",
     authorizing: "Authorizing...",
-    signin: "Sign in",
-    signout: "Sign out",
     current: "current",
     error: "Error",
+  },
+  signin: {
+    signin: "Sign in",
+    signinButton: "Sign in to start",
+    signout: "Sign out",
   },
   tasks: {
     task: "Task",
     tasksList: "Tasks list",
+    goToTasksList: "Go to tasks list",
     createTaskMenu: "Create task",
     createTaskTitle: "Create a new task",
     taskLabelName: "Task",
@@ -75,8 +79,10 @@ export const en = {
   },
   about: {
     title: "About",
-    copyright: "© 2022, created by IvanProbst",
+    copyright: "© 2022",
     website: "ivanprobst.com",
+    urlWebsite: "https://ivanprobst.com",
     github: "GitHub",
+    urlGithub: "https://github.com/ivanprobst/choares",
   },
 };

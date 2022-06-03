@@ -62,7 +62,8 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push(ROUTES.signin);
+      router.push(ROUTES.home);
+      return;
     },
   });
 
@@ -97,47 +98,47 @@ const LayoutAuth = ({ children }: { children: ReactNode }) => {
       });
     };
 
-    initCurrentGroupdId();
-  }, [t, setGroupSession]);
+    if (status !== "loading" && session) {
+      initCurrentGroupdId();
+    }
+  }, [t, setGroupSession, status, session]);
 
   if (status === "loading") {
     return <Spinner />;
   }
 
   return (
-    <>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1>
-            <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
-          </h1>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1>
+          <Link href={ROUTES.tasksList}>{t.common.choares}</Link>
+        </h1>
 
-          <div className={styles.actionContainer}>
-            <Link href={ROUTES.tasksCreate}>
-              <a>
-                <IconAdd />
-              </a>
-            </Link>
-          </div>
-        </header>
+        <div className={styles.actionContainer}>
+          <Link href={ROUTES.tasksCreate}>
+            <a>
+              <IconAdd />
+            </a>
+          </Link>
+        </div>
+      </header>
 
-        <main className={styles.main}>{children}</main>
+      <main className={styles.main}>{children}</main>
 
-        <footer className={styles.footer}>
-          <p className={styles.groupContainer}>
-            {`${t.groups.group}: ${groupSession?.name}`}
-          </p>
+      <footer className={styles.footer}>
+        <p className={styles.groupContainer}>
+          {`${t.groups.group}: ${groupSession?.name}`}
+        </p>
 
-          <nav>
-            <Link href={ROUTES.settings}>
-              <a>
-                <IconSettings />
-              </a>
-            </Link>
-          </nav>
-        </footer>
-      </div>
-    </>
+        <nav>
+          <Link href={ROUTES.settings}>
+            <a>
+              <IconSettings />
+            </a>
+          </Link>
+        </nav>
+      </footer>
+    </div>
   );
 };
 

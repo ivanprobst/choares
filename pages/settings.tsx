@@ -28,7 +28,7 @@ const SettingsActions = () => {
       </Button>
 
       <Button onClick={() => signOut()} type="red" isLoading={isLoadingAPI}>
-        {t.common.signout}
+        {t.signin.signout}
       </Button>
     </div>
   );
@@ -47,7 +47,16 @@ const SettingsPage: NextPage = () => {
           <div className={styles.settingsContainer}>
             <h2>{t.settings.title}</h2>
             <SettingsActions />
-            <p>{t.about.copyright}</p>
+            <p className={styles.groupContainer}>
+              {t.about.copyright},{" "}
+              <a
+                href={t.about.urlWebsite}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t.about.website}
+              </a>
+            </p>
           </div>
         )}
       </LayoutAuth>

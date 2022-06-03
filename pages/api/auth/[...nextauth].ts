@@ -14,8 +14,8 @@ export default NextAuth({
     }),
   ],
   theme: {
-    colorScheme: "dark",
-    brandColor: "212124",
+    colorScheme: "auto",
+    brandColor: "#5e81ac",
   },
   callbacks: {
     session: async ({ session, user }) => {
