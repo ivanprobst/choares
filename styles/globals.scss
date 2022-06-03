@@ -4,6 +4,7 @@
 html,
 body {
   padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
   margin: 0;
   color: colors.$secondary;
   font-size: 16px;

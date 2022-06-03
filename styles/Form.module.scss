@@ -13,10 +13,11 @@
   input,
   select {
     width: 100%;
-    padding: 1rem;
+    padding: 0.8rem;
     border: 1px solid colors.$secondary;
     border-radius: 5px;
     background: colors.$fourth;
+    color: colors.$thirdary;
     font-family: inherit;
     font-size: inherit;
 
@@ -28,6 +29,10 @@
 
   textarea {
     resize: none; // TODO: see if scrolling works well for description field
+  }
+
+  select {
+    -webkit-appearance: textfield;
   }
 }
 
