@@ -1,11 +1,13 @@
 @use "colors";
+@use "fonts";
 
 html,
 body {
   padding: 0;
   margin: 0;
   color: colors.$secondary;
-  font-family: Helvetica Neue, Helvetica, sans-serif;
+  font-size: 16px;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
 h1,
@@ -18,12 +20,18 @@ p {
   margin: 0;
 }
 
+h2 {
+  font-size: fonts.$bigger;
+  margin-bottom: 0.5rem;
+}
+
 a {
   color: inherit;
   text-decoration: underline;
   color: colors.$secondary;
 }
 
+ol,
 ul {
   margin: 0;
   padding: 0;
